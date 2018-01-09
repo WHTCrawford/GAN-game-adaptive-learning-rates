@@ -152,13 +152,13 @@ for it in simuls:
 
 
     res_dataframe = pd.DataFrame(data=res_matrix.astype(float))
-    pd.DataFrame.to_csv(res_dataframe,'data/results{0}.csv'.format(it), sep=',', header=False, float_format='%.6f', index=False)
+    pd.DataFrame.to_csv(res_dataframe,'/Users/Billy/PycharmProjects/GALR/data/results{0}.csv'.format(it), sep=',', header=False, float_format='%.6f', index=False)
 
     gamma_dataframe = pd.DataFrame(data=gamma_out_vec.astype(float))
-    pd.DataFrame.to_csv(gamma_dataframe,'data/gamma{0}.csv'.format(it), sep=',', header=False, float_format='%.8f', index=False)
+    pd.DataFrame.to_csv(gamma_dataframe,'/Users/Billy/PycharmProjects/GALR/data/gamma{0}.csv'.format(it), sep=',', header=False, float_format='%.8f', index=False)
 
     phi_dataframe = pd.DataFrame(data=phi_out_vec.astype(float))
-    pd.DataFrame.to_csv(phi_dataframe,'data/phi{0}.csv'.format(it), sep=',', header=False, float_format='%.6f', index=False)
+    pd.DataFrame.to_csv(phi_dataframe,'/Users/Billy/PycharmProjects/GALR/data/phi{0}.csv'.format(it), sep=',', header=False, float_format='%.6f', index=False)
 
     f = open('recently_completed_trial.txt', 'w')
     f.write(str(it))
