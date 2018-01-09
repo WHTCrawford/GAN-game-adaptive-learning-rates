@@ -108,8 +108,8 @@ for it in simuls:
     generator_input = np.random.uniform(0, 1, (sample_size, 1))
     real_dist = np.random.normal(real_mean, real_sd, (sample_size, 1))
     # sample parameters
-    gamma_vec = np.random.uniform(0.01,0.02,3)  # 0.00001,0.01,3
-    phi_vec = np.random.uniform(0.00001, 0.02, 3) #0.00001, 0.02, 3, phi should be bigger as it is then made smaller by tanh
+    gamma_vec = np.random.uniform(0.01,0.1,3)  # 0.00001,0.01,3
+    phi_vec = np.random.uniform(0.00001, 0.1, 3) #0.00001, 0.02, 3, phi should be bigger as it is then made smaller by tanh
     phi_vec[0] = 0.0000001
 
     res_matrix = np.zeros((len(gamma_vec) * len(phi_vec), sample_size))
