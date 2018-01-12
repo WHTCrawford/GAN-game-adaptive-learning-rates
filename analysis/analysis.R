@@ -18,7 +18,7 @@ source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
 ##################################################
 phi_against_gamma = TRUE
 plot_histograms = F
-interactive_plot = FALSE
+interactive_plot = F
 scatter_3D = FALSE
 loess_plot = T
 phi_as_factor = F
@@ -43,14 +43,14 @@ most_recent_trial = as.numeric(suppressWarnings(
 
 for(trial in 1:most_recent_trial){
   results = read.csv(paste(
-    paste('/Users/Billy/PycharmProjects/GALR/GAN-game-adaptive-learning-rates/data/results',trial,sep=''),
+    paste('/Users/Billy/PycharmProjects/GALR/data/results',trial,sep=''),
     '.csv',sep = ''))
   
   gamma = read.csv(paste(
-    paste('/Users/Billy/PycharmProjects/GALR/GAN-game-adaptive-learning-rates/data/gamma',trial,sep=''),
+    paste('/Users/Billy/PycharmProjects/GALR/data/gamma',trial,sep=''),
     '.csv',sep = ''))
   
-  phi = read.csv(paste(paste('/Users/Billy/PycharmProjects/GALR/GAN-game-adaptive-learning-rates/data/phi',
+  phi = read.csv(paste(paste('/Users/Billy/PycharmProjects/GALR/data/phi',
                              trial,sep=''),'.csv',sep = ''))
   
   trial_data = cbind(cbind(gamma,phi),results)
@@ -239,7 +239,7 @@ shapiro_data = data.frame(x = collected_data$Gamma, y = collected_data$Phi,z = s
 if(loess_plot){
     size_of_grid = 100
     
-    fit_loess = loess(z~x*y,data =shapiro_data, span = 0.4)
+    fit_loess = loess(z~x*y,data =shapiro_data, span = 0.1)
     
     g_p_grid = expand.grid(list(x = seq(min(shapiro_data$x), max(shapiro_data$x), length.out = size_of_grid), 
                                      y = seq(min(shapiro_data$y),  max(shapiro_data$y), length.out = size_of_grid)))
@@ -247,7 +247,7 @@ if(loess_plot){
     
     persp(seq(min(shapiro_data$x), max(shapiro_data$x), length.out = size_of_grid),
           y = seq(min(shapiro_data$y),  max(shapiro_data$y), length.out = size_of_grid),
-          predicted_shapiro, theta = -45,phi = 30,
+          predicted_shapiro, theta = -45,phi = 20, # theta = -45,phi = 20,
           xlab = "Gamma", ylab = "Phi",zlab = 'Shapiro-Wilk Statistic', main = "Shapiro-Wilk Statistic Surface")
 }  
 
