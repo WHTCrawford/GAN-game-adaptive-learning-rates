@@ -31,7 +31,7 @@ def discriminator(input, parameters):
     activ_2 = tf.add(tf.matmul(pre_1, parameters[2]), parameters[3])
     pre_2 = tf.tanh(activ_2)
     activ_3 = tf.add(tf.matmul(pre_2, parameters[4]), parameters[5])
-    output = tf.tanh(activ_3)
+    output = tf.sigmoid(activ_3)
     return output
 
 
@@ -113,7 +113,8 @@ for it in simuls:
     # sample parameters
     gamma_vec = np.random.uniform(0.00001,0.1,3)
     phi_vec = np.random.uniform(0.00001, 0.1, 3)
-    phi_vec[0] = 0.00000001
+    phi_vec[0] = min(gamma_vec)*0.0000001 # make sure the 'zero' phi is many times smaller than the smallest gamma
+                                          # cant actually make it zero as it causes errors sometimes
 
     res_matrix = np.zeros((len(gamma_vec) * len(phi_vec), sample_size))
     gamma_out_vec, phi_out_vec = np.zeros((len(gamma_vec) * len(phi_vec))), np.zeros((len(gamma_vec) * len(phi_vec)))
@@ -148,9 +149,9 @@ for it in simuls:
                 phi_out_vec[row] = p
                 row = row+1
 
-                sns.distplot(generated, hist=False, rug=False)
-                sns.distplot(real_dist, hist=False, rug=False)
-                plt.show()
+                # sns.distplot(generated, hist=False, rug=False)
+                # sns.distplot(real_dist, hist=False, rug=False)
+                # plt.show()
 
     res_dataframe = pd.DataFrame(data=res_matrix.astype(float))
     gamma_dataframe = pd.DataFrame(data=gamma_out_vec.astype(float))
