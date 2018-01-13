@@ -17,7 +17,7 @@ source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
 ############## WHICH PLOTS #######################
 ##################################################
 phi_against_gamma = TRUE
-plot_histograms = F
+plot_histograms = T
 interactive_plot = F
 scatter_3D = FALSE
 loess_plot = T
@@ -25,7 +25,7 @@ phi_as_factor = F
 gamma_as_factor = F
 
 ##################################################
-sub_folder = 'scope_adam'
+sub_folder = 'momentum0.6'
 
 ##################################################
 ################COLOURS###########################
@@ -66,42 +66,41 @@ if(phi_against_gamma){
   ggplot(collected_data,aes(x = Gamma, y = Phi))+geom_point(col=cols[1])+xlab(bquote(gamma))+ylab(bquote(phi))
 }
 
-
 # create 9 paneled histogram picture
 if(plot_histograms){
       
       panel_1 = collected_data[collected_data$Gamma< gamma_boundaries[1] & 
                                  collected_data$Phi == phi_boundaries[1],3:1002]
       
-      panel_2 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
+      panel_2 = collected_data[gamma_boundaries[1]<= collected_data$Gamma &  
                                  collected_data$Gamma < gamma_boundaries[2] &
                                  collected_data$Phi == phi_boundaries[1],3:1002]
       
-      panel_3 = collected_data[gamma_boundaries[2] < collected_data$Gamma & 
+      panel_3 = collected_data[gamma_boundaries[2] <= collected_data$Gamma & 
                                  collected_data$Phi == phi_boundaries[1],3:1002]
       
       panel_4 = collected_data[collected_data$Gamma < gamma_boundaries[1] & 
                                   phi_boundaries[1] < collected_data$Phi &
                                  collected_data$Phi < phi_boundaries[2],3:1002]
       
-      panel_5 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
+      panel_5 = collected_data[gamma_boundaries[1]<= collected_data$Gamma &  
                                  collected_data$Gamma < gamma_boundaries[2] &
-                                 phi_boundaries[1] < collected_data$Phi &
+                                 phi_boundaries[1] <= collected_data$Phi &
                                  collected_data$Phi < phi_boundaries[2],3:1002]
       
-      panel_6 = collected_data[gamma_boundaries[2] < collected_data$Gamma & 
-                                 phi_boundaries[1] < collected_data$Phi &
+      panel_6 = collected_data[gamma_boundaries[2] <= collected_data$Gamma & 
+                                 phi_boundaries[1] <= collected_data$Phi &
                                  collected_data$Phi < phi_boundaries[2],3:1002]
       
       panel_7 = collected_data[collected_data$Gamma < gamma_boundaries[1] & 
-                                  phi_boundaries[2]< collected_data$Phi,3:1002]
+                                  phi_boundaries[2]<= collected_data$Phi,3:1002]
       
-      panel_8 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
+      panel_8 = collected_data[gamma_boundaries[1]<= collected_data$Gamma &  
                                  collected_data$Gamma < gamma_boundaries[2] &
-                                 phi_boundaries[2]< collected_data$Phi,3:1002]
+                                 phi_boundaries[2]<= collected_data$Phi,3:1002]
       
-      panel_9 = collected_data[gamma_boundaries[2] < collected_data$Gamma &  
-                                 phi_boundaries[2]< collected_data$Phi,3:1002]
+      panel_9 = collected_data[gamma_boundaries[2] <= collected_data$Gamma &  
+                                 phi_boundaries[2]<= collected_data$Phi,3:1002]
       
       # take a sample of the rows
       min_rows = min(c(nrow(panel_1),nrow(panel_2),nrow(panel_3),nrow(panel_4),nrow(panel_5),
