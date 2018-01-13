@@ -18,7 +18,17 @@ sample_size = 2000
 learn_steps = (number_of_epochs*sample_size) / mini_batch_size
 hidden_layer_size_d = 6
 hidden_layer_size_g = 5
-RESET = False # If running a new architecture or new gradient descent algorithm etc set to True
+Optimize_algorithm = 'momentum0.6'  # one of 'adam', 'momentum0.6', 'momentum0.9', 'sgd'
+
+
+# Choose directory for data based on algorithm choice
+algo_directory_dict = {'adam':'/Users/Billy/PycharmProjects/GALR/data/scope_adam',
+                       'momentum0.6':'/Users/Billy/PycharmProjects/GALR/data/scope_momentum0.6',
+                       'momentum0.9':'/Users/Billy/PycharmProjects/GALR/data/scope_momentum0.9',
+                       'sgd':'/Users/Billy/PycharmProjects/GALR/data/scope_sgd'}
+
+directory = algo_directory_dict[Optimize_algorithm]
+
 
 # define actual distribution
 real_mean = 6
@@ -89,28 +99,31 @@ V1 = tf.where(tf.is_nan(V), tf.zeros_like(V), V)
 learning_rate_d = gamma-phi_d*tf.tanh(adjuster*V1)
 learning_rate_g = gamma + phi_g*(1 + tf.tanh(adjuster*V1))
 
-# Train step
+# Train step, we chose the algorithm based on the Optimize_algorithm variable
 
-# train_g = tf.train.AdamOptimizer(learning_rate_d).minimize(loss_g, var_list=g_parameters)
-# train_d = tf.train.AdamOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
+algo_dict = {   'adam':['tf.train.AdamOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)',
+                        'tf.train.AdamOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)'],
+                'momentum0.6':[ 'tf.train.MomentumOptimizer(learning_rate_g,0.6).minimize(loss_g, var_list=g_parameters)',
+                                'tf.train.MomentumOptimizer(learning_rate_d,0.6).minimize(loss_d, var_list=g_parameters)'],
+                'momentum0.9':[ 'tf.train.MomentumOptimizer(learning_rate_g,0.9).minimize(loss_g, var_list=g_parameters)',
+                                'tf.train.MomentumOptimizer(learning_rate_d,0.9).minimize(loss_d, var_list=g_parameters)'],
+                'sgd':[ 'tf.train.GradientDescentOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)',
+                        'tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, var_list=g_parameters)']
+                }
 
-# train_g = tf.train.GradientDescentOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)
-# train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
 
+train_g = eval(algo_dict[Optimize_algorithm][0])
+train_d = eval(algo_dict[Optimize_algorithm][1])
 
-train_g = tf.train.MomentumOptimizer(learning_rate_g,0.6).minimize(loss_g, var_list=g_parameters)
-train_d = tf.train.MomentumOptimizer(learning_rate_d,0.6).minimize(loss_d, var_list=d_parameters)
 
 
 decision_surface_input = np.linspace(2.0,10.0, 1000).reshape((1000,1))
 
 
+# this just makes sure that we are not going to overwrite old data
 f = open('recently_completed_trial.txt','r')
 start_line = int(f.read())+1
 f.close()
-
-if RESET:
-    start_line = 1
 
 simuls = range(start_line,start_line+number_of_trails)
 
@@ -170,7 +183,7 @@ for it in simuls:
     output_dataframe1 = pd.concat([gamma_dataframe.reset_index(drop=True), phi_dataframe], axis=1)
     output_dataframe2 = pd.concat([output_dataframe1.reset_index(drop=True), res_dataframe], axis=1)
 
-    pd.DataFrame.to_csv(output_dataframe2,'/Users/Billy/PycharmProjects/GALR/data/output{0}.csv'.format(it), sep=',', header=False, float_format='%.7f', index=False)
+    pd.DataFrame.to_csv(output_dataframe2, directory +'/output{0}.csv'.format(it), sep=',', header=False, float_format='%.7f', index=False)
 
     f = open('recently_completed_trial.txt', 'w')
     f.write(str(it))
