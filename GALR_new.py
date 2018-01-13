@@ -31,7 +31,7 @@ def discriminator(input, parameters):
     activ_2 = tf.add(tf.matmul(pre_1, parameters[2]), parameters[3])
     pre_2 = tf.tanh(activ_2)
     activ_3 = tf.add(tf.matmul(pre_2, parameters[4]), parameters[5])
-    output = tf.sigmoid(activ_3)
+    output = tf.tanh(activ_3)
     return output
 
 
@@ -51,13 +51,15 @@ bias_d_2 = tf.Variable(tf.random_uniform([hidden_layer_size_d], minval=0, maxval
 weight_d_3 = tf.Variable(tf.random_uniform([hidden_layer_size_d, 1], minval=0, maxval=1, dtype=tf.float32))
 bias_d_3 = tf.Variable(tf.random_uniform([1], minval=0, maxval=1, dtype=tf.float32))
 
+d_parameters = [weight_d_1,bias_d_1, weight_d_2, bias_d_2,weight_d_3, bias_d_3]
+
 weight_g_1 = tf.Variable(tf.random_uniform([1, hidden_layer_size_g], minval=0, maxval=1, dtype=tf.float32))
 bias_g_1 = tf.Variable(tf.random_uniform([hidden_layer_size_g], minval=0, maxval=1, dtype=tf.float32))
 weight_g_2 = tf.Variable(tf.random_uniform([hidden_layer_size_g, 1], minval=0, maxval=1, dtype=tf.float32))
 bias_g_2 = tf.Variable(tf.random_uniform([1], minval=0, maxval=1, dtype=tf.float32))
 
 
-d_parameters = [weight_d_1,bias_d_1, weight_d_2, bias_d_2,weight_d_3, bias_d_3]
+
 g_parameters = [weight_g_1,bias_g_1, weight_g_2, bias_g_2]
 
 
@@ -146,9 +148,9 @@ for it in simuls:
                 phi_out_vec[row] = p
                 row = row+1
 
-                # sns.distplot(generated, hist=False, rug=False)
-                # sns.distplot(real_dist, hist=False, rug=False)
-                # plt.show()
+                sns.distplot(generated, hist=False, rug=False)
+                sns.distplot(real_dist, hist=False, rug=False)
+                plt.show()
 
     res_dataframe = pd.DataFrame(data=res_matrix.astype(float))
     gamma_dataframe = pd.DataFrame(data=gamma_out_vec.astype(float))
