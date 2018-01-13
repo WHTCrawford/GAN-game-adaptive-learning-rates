@@ -18,16 +18,16 @@ sample_size = 2000
 learn_steps = (number_of_epochs*sample_size) / mini_batch_size
 hidden_layer_size_d = 6
 hidden_layer_size_g = 5
-Optimize_algorithm = 'momentum0.6'  # one of 'adam', 'momentum0.6', 'momentum0.9', 'sgd'
+optimize_algorithm = 'momentum0.6'  # one of 'adam', 'momentum0.6', 'momentum0.9', 'gd'
 
 
 # Choose directory for data based on algorithm choice
-algo_directory_dict = {'adam':'/Users/Billy/PycharmProjects/GALR/data/scope_adam',
-                       'momentum0.6':'/Users/Billy/PycharmProjects/GALR/data/scope_momentum0.6',
-                       'momentum0.9':'/Users/Billy/PycharmProjects/GALR/data/scope_momentum0.9',
-                       'sgd':'/Users/Billy/PycharmProjects/GALR/data/scope_sgd'}
+algo_directory_dict = {'adam':'/Users/Billy/PycharmProjects/GALR/data/adam',
+                       'momentum0.6':'/Users/Billy/PycharmProjects/GALR/data/momentum0.6',
+                       'momentum0.9':'/Users/Billy/PycharmProjects/GALR/data/momentum0.9',
+                       'gd':'/Users/Billy/PycharmProjects/GALR/data/gd'}
 
-directory = algo_directory_dict[Optimize_algorithm]
+directory = algo_directory_dict[optimize_algorithm]
 
 
 # define actual distribution
@@ -99,7 +99,7 @@ V1 = tf.where(tf.is_nan(V), tf.zeros_like(V), V)
 learning_rate_d = gamma-phi_d*tf.tanh(adjuster*V1)
 learning_rate_g = gamma + phi_g*(1 + tf.tanh(adjuster*V1))
 
-# Train step, we chose the algorithm based on the Optimize_algorithm variable
+# Train step, we chose the algorithm based on the optimize_algorithm variable
 
 algo_dict = {   'adam':['tf.train.AdamOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)',
                         'tf.train.AdamOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)'],
@@ -107,17 +107,14 @@ algo_dict = {   'adam':['tf.train.AdamOptimizer(learning_rate_g).minimize(loss_g
                                 'tf.train.MomentumOptimizer(learning_rate_d,0.6).minimize(loss_d, var_list=g_parameters)'],
                 'momentum0.9':[ 'tf.train.MomentumOptimizer(learning_rate_g,0.9).minimize(loss_g, var_list=g_parameters)',
                                 'tf.train.MomentumOptimizer(learning_rate_d,0.9).minimize(loss_d, var_list=g_parameters)'],
-                'sgd':[ 'tf.train.GradientDescentOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)',
+                'gd':[ 'tf.train.GradientDescentOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)',
                         'tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, var_list=g_parameters)']
                 }
 
 
-train_g = eval(algo_dict[Optimize_algorithm][0])
-train_d = eval(algo_dict[Optimize_algorithm][1])
+train_g = eval(algo_dict[optimize_algorithm][0])
+train_d = eval(algo_dict[optimize_algorithm][1])
 
-
-
-decision_surface_input = np.linspace(2.0,10.0, 1000).reshape((1000,1))
 
 
 # this just makes sure that we are not going to overwrite old data
