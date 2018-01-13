@@ -11,7 +11,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Structure: loop through a big sample by taking minibatches, do this for a number of epochs . Do all of this for
 # however many trials,randomising the learning rate parameters each time
-number_of_trails = 50
+number_of_trails = 56
 number_of_epochs = 400
 mini_batch_size = 10
 sample_size = 2000
@@ -91,15 +91,15 @@ learning_rate_g = gamma + phi_g*(1 + tf.tanh(adjuster*V1))
 
 # Train step
 
-train_g = tf.train.AdamOptimizer(learning_rate_d).minimize(loss_g, var_list=g_parameters)
-train_d = tf.train.AdamOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
+# train_g = tf.train.AdamOptimizer(learning_rate_d).minimize(loss_g, var_list=g_parameters)
+# train_d = tf.train.AdamOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
 
 # train_g = tf.train.GradientDescentOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)
 # train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
 
 
-# train_g = tf.train.MomentumOptimizer(learning_rate_g,0.6).minimize(loss_g, var_list=g_parameters)
-# train_d = tf.train.MomentumOptimizer(learning_rate_d,0.6).minimize(loss_d, var_list=d_parameters)
+train_g = tf.train.MomentumOptimizer(learning_rate_g,0.6).minimize(loss_g, var_list=g_parameters)
+train_d = tf.train.MomentumOptimizer(learning_rate_d,0.6).minimize(loss_d, var_list=d_parameters)
 
 
 decision_surface_input = np.linspace(2.0,10.0, 1000).reshape((1000,1))
@@ -120,10 +120,12 @@ for it in simuls:
     # sample data
     generator_input = np.random.uniform(0, 1, (sample_size, 1))
     real_dist = np.random.normal(real_mean, real_sd, (sample_size, 1))
-    # sample parameters
+
+    # sample parameters we sample 2 phis and also take phi = 0 and then 3 gammas and then train the GAN on each of
+    # the 9 parameter pairs this gives:
     gamma_vec = np.random.uniform(0.00001,0.1,3)  # 0.00001,0.01,3
     phi_vec = np.random.uniform(0.00001, 0.2, 3) #0.00001, 0.02, 3, phi should be bigger as it is then made smaller by tanh
-    phi_vec[0] = 0.0000001
+    phi_vec[0] = 0.00000001
 
     res_matrix = np.zeros((len(gamma_vec) * len(phi_vec), sample_size))
     gamma_out_vec, phi_out_vec = np.zeros((len(gamma_vec) * len(phi_vec))), np.zeros((len(gamma_vec) * len(phi_vec)))
@@ -161,15 +163,14 @@ for it in simuls:
                 # plt.show()
 
 
-
     res_dataframe = pd.DataFrame(data=res_matrix.astype(float))
-    pd.DataFrame.to_csv(res_dataframe,'/Users/Billy/PycharmProjects/GALR/data/results{0}.csv'.format(it), sep=',', header=False, float_format='%.6f', index=False)
-
     gamma_dataframe = pd.DataFrame(data=gamma_out_vec.astype(float))
-    pd.DataFrame.to_csv(gamma_dataframe,'/Users/Billy/PycharmProjects/GALR/data/gamma{0}.csv'.format(it), sep=',', header=False, float_format='%.9f', index=False)
-
     phi_dataframe = pd.DataFrame(data=phi_out_vec.astype(float))
-    pd.DataFrame.to_csv(phi_dataframe,'/Users/Billy/PycharmProjects/GALR/data/phi{0}.csv'.format(it), sep=',', header=False, float_format='%.6f', index=False)
+
+    output_dataframe1 = pd.concat([gamma_dataframe.reset_index(drop=True), phi_dataframe], axis=1)
+    output_dataframe2 = pd.concat([output_dataframe1.reset_index(drop=True), res_dataframe], axis=1)
+
+    pd.DataFrame.to_csv(output_dataframe2,'/Users/Billy/PycharmProjects/GALR/data/output{0}.csv'.format(it), sep=',', header=False, float_format='%.7f', index=False)
 
     f = open('recently_completed_trial.txt', 'w')
     f.write(str(it))
