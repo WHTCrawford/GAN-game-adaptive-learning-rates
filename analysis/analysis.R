@@ -25,7 +25,7 @@ phi_as_factor = F
 gamma_as_factor = F
 
 ##################################################
-sub_folder = 'momentum0.6'
+sub_folder = 'gd'
 
 ##################################################
 ################COLOURS###########################
@@ -67,46 +67,49 @@ if(phi_against_gamma){
 }
 
 # create 9 paneled histogram picture
-if(plot_histograms){
+
+if(plot_histograms){ 
       
-      panel_1 = collected_data[collected_data$Gamma< gamma_boundaries[1] & 
+      entries_per_group = 10
+      
+      panel_1 = collected_data[collected_data$Gamma<= gamma_boundaries[1] & 
                                  collected_data$Phi == phi_boundaries[1],3:1002]
       
-      panel_2 = collected_data[gamma_boundaries[1]<= collected_data$Gamma &  
-                                 collected_data$Gamma < gamma_boundaries[2] &
+      panel_2 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
+                                 collected_data$Gamma <= gamma_boundaries[2] &
                                  collected_data$Phi == phi_boundaries[1],3:1002]
       
-      panel_3 = collected_data[gamma_boundaries[2] <= collected_data$Gamma & 
+      panel_3 = collected_data[gamma_boundaries[2] < collected_data$Gamma & 
                                  collected_data$Phi == phi_boundaries[1],3:1002]
       
-      panel_4 = collected_data[collected_data$Gamma < gamma_boundaries[1] & 
+      panel_4 = collected_data[collected_data$Gamma <= gamma_boundaries[1] & 
                                   phi_boundaries[1] < collected_data$Phi &
-                                 collected_data$Phi < phi_boundaries[2],3:1002]
+                                 collected_data$Phi <= phi_boundaries[2],3:1002]
       
-      panel_5 = collected_data[gamma_boundaries[1]<= collected_data$Gamma &  
-                                 collected_data$Gamma < gamma_boundaries[2] &
-                                 phi_boundaries[1] <= collected_data$Phi &
-                                 collected_data$Phi < phi_boundaries[2],3:1002]
+      panel_5 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
+                                 collected_data$Gamma <= gamma_boundaries[2] &
+                                 phi_boundaries[1] < collected_data$Phi &
+                                 collected_data$Phi <= phi_boundaries[2],3:1002]
       
-      panel_6 = collected_data[gamma_boundaries[2] <= collected_data$Gamma & 
-                                 phi_boundaries[1] <= collected_data$Phi &
-                                 collected_data$Phi < phi_boundaries[2],3:1002]
+      panel_6 = collected_data[gamma_boundaries[2] < collected_data$Gamma & 
+                                 phi_boundaries[1] < collected_data$Phi &
+                                 collected_data$Phi <= phi_boundaries[2],3:1002]
       
-      panel_7 = collected_data[collected_data$Gamma < gamma_boundaries[1] & 
-                                  phi_boundaries[2]<= collected_data$Phi,3:1002]
+      panel_7 = collected_data[collected_data$Gamma <= gamma_boundaries[1] & 
+                                  phi_boundaries[2]< collected_data$Phi,3:1002]
       
-      panel_8 = collected_data[gamma_boundaries[1]<= collected_data$Gamma &  
-                                 collected_data$Gamma < gamma_boundaries[2] &
-                                 phi_boundaries[2]<= collected_data$Phi,3:1002]
+      panel_8 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
+                                 collected_data$Gamma <= gamma_boundaries[2] &
+                                 phi_boundaries[2]< collected_data$Phi,3:1002]
       
-      panel_9 = collected_data[gamma_boundaries[2] <= collected_data$Gamma &  
-                                 phi_boundaries[2]<= collected_data$Phi,3:1002]
+      panel_9 = collected_data[gamma_boundaries[2] < collected_data$Gamma &  
+                                 phi_boundaries[2]< collected_data$Phi,3:1002]
       
       # take a sample of the rows
       min_rows = min(c(nrow(panel_1),nrow(panel_2),nrow(panel_3),nrow(panel_4),nrow(panel_5),
                        nrow(panel_6),nrow(panel_7),nrow(panel_8),nrow(panel_9)))
     
-      sample_size = min(3,min_rows)
+      sample_size = min(entries_per_group,min_rows)
       
       panel_1 = data.frame(x = melt(panel_1[sample(1:nrow(panel_1),size = sample_size,replace = F),])[,2])
       panel_2 = data.frame(x = melt(panel_2[sample(1:nrow(panel_2),size = sample_size,replace = F),])[,2])
@@ -137,7 +140,7 @@ if(plot_histograms){
       
       # chart titles
       
-      title1 = bquote(gamma~'<'~.(round(gamma_boundaries[1],5))~', '~phi~'='~.(round(phi_boundaries[1],5)))
+      title1 = bquote(gamma~ '<' ~.(round(gamma_boundaries[1],5))~', '~phi~'='~.(round(phi_boundaries[1],5)))
       
       title2 = bquote(.(round(gamma_boundaries[1],5))~'<'~gamma~'<'~.(round(gamma_boundaries[2],5))~', '
                       ~phi~'='~.(round(phi_boundaries[1],5)))
@@ -171,7 +174,7 @@ if(plot_histograms){
           labs(title=title1)+ theme(plot.title = element_text(size=8))+ylim(0,max_density)+xlim(4,8)
       p2 = ggplot(data.frame(x=panel_2), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
         stat_function(fun = dnorm, args = list(mean = 6, sd = 1), lwd = 1, col = cols[1])+ xlab('')+ ylab('')+
-        labs(title=title2)+ theme(plot.title = element_text(size=8))+ylim(0,max_density)
+        labs(title=title2)+ theme(plot.title = element_text(size=8))+ylim(0,max_density)+xlim(4,8)
       p3 = ggplot(data.frame(x=panel_3), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
         stat_function(fun = dnorm, args = list(mean = 6, sd = 1), lwd = 1, 
                       col = cols[1])+ xlab('')+ ylab('')+labs(title=title3)+ theme(plot.title = element_text(size=8))+
@@ -235,18 +238,23 @@ shapiro_stats = 1-sapply(1:nrow(normal_data),pull_shapiro)
 shapiro_data = data.frame(x = phi_gamma_data$Gamma, y = phi_gamma_data$Phi,z = shapiro_stats)
 
 if(loess_plot){
-    size_of_grid = 200
-    
-    fit_loess = loess(z~x*y,data =shapiro_data, span = 0.2)
-    
-    g_p_grid = expand.grid(list(x = seq(min(shapiro_data$x), max(shapiro_data$x), length.out = size_of_grid), 
-                                     y = seq(min(shapiro_data$y),  max(shapiro_data$y), length.out = size_of_grid)))
-    predicted_shapiro = predict(fit_loess, newdata = g_p_grid)
-    
-    persp(seq(min(shapiro_data$x), max(shapiro_data$x), length.out = size_of_grid),
-          y = seq(min(shapiro_data$y),  max(shapiro_data$y), length.out = size_of_grid),
-          predicted_shapiro, theta = -45,phi = 20, # theta = -45,phi = 20,
-          xlab = "Gamma", ylab = "Phi",zlab = 'Shapiro-Wilk Statistic', main = "Shapiro-Wilk Statistic Surface")
+  
+    par(mfrow = c(1,1))
+    for(theta_1 in c(45,135,225,315)){
+      
+        size_of_grid = 80
+        
+        fit_loess = loess(z~x*y,data =shapiro_data, span = 0.1)
+        
+        g_p_grid = expand.grid(list(x = seq(min(shapiro_data$x), max(shapiro_data$x), length.out = size_of_grid), 
+                                         y = seq(min(shapiro_data$y),  max(shapiro_data$y), length.out = size_of_grid)))
+        predicted_shapiro = predict(fit_loess, newdata = g_p_grid)
+        
+        persp(seq(min(shapiro_data$x), max(shapiro_data$x), length.out = size_of_grid),
+              y = seq(min(shapiro_data$y),  max(shapiro_data$y), length.out = size_of_grid),
+              predicted_shapiro, theta = theta_1,phi = 20, # theta = -45,phi = 20,
+              xlab = "Gamma", ylab = "Phi",zlab = 'Shapiro-Wilk Statistic', main = "")
+    }
 }  
 
 if(scatter_3D){
@@ -287,7 +295,7 @@ shapiro_data$phi_factors = cut(shapiro_data$y, breaks = c(-Inf, phi_boundaries, 
 if(phi_as_factor){
   shapiro_min = min(shapiro_data$z)
   shapiro_max = max(shapiro_data$z)
-  cols = gg_color_hue(3)
+  colours = gg_color_hue(3)
   mean_1 = data.frame( x = c(-Inf, Inf), y = mean(shapiro_data$z[shapiro_data$phi_factors == 'zero']), 
                        cutoff = factor(mean(shapiro_data$z[shapiro_data$phi_factors == 'zero'])))
   mean_2 = data.frame( x = c(-Inf, Inf), y = mean(shapiro_data$z[shapiro_data$phi_factors == 'low']), 
@@ -296,15 +304,15 @@ if(phi_as_factor){
                        cutoff = factor(mean(shapiro_data$z[shapiro_data$phi_factors == 'high'])))
     
   p1 = ggplot(shapiro_data[shapiro_data$phi_factors == 'zero',], aes(x=x, y=z))+
-    geom_point(col = cols[1])+ xlab(bquote(gamma))+ theme(legend.position="none")+
+    geom_point(col = colours[1])+ xlab(bquote(gamma))+ theme(legend.position="none")+
     ylab(expression(frac(1,'Shapiro-Wilk Statistic')))+ggtitle(bquote(phi~'='~'0'))+
     ylim(shapiro_min,shapiro_max)+geom_line(aes( x, y, linetype = cutoff ), mean_1, col = cols[1], lty = 2, lwd = 3)
   p2 = ggplot(shapiro_data[shapiro_data$phi_factors == 'low',], aes(x=x, y=z))+
-    geom_point(col = cols[2])+ xlab(bquote(gamma))+theme(legend.position="none")+
+    geom_point(col = colours[2])+ xlab(bquote(gamma))+theme(legend.position="none")+
     ggtitle(bquote(.(round(phi_boundaries[1],5))~'<'~phi~'<'~.(round(phi_boundaries[2],5))))+
     ylim(shapiro_min,shapiro_max)+geom_line(aes( x, y, linetype = cutoff ), mean_2, col = cols[2], lty = 2, lwd = 3)
   p3 = ggplot(shapiro_data[shapiro_data$phi_factors == 'high',], aes(x=x, y=z))+
-    geom_point(col = cols[3])+ xlab(bquote(gamma))+theme(legend.position="none")+
+    geom_point(col = colours[3])+ xlab(bquote(gamma))+theme(legend.position="none")+
     ggtitle(bquote(.(round(phi_boundaries[2],5))~'<'~phi))+
     ylim(shapiro_min,shapiro_max)+geom_line(aes( x, y, linetype = cutoff ), mean_2, col = cols[3], lty = 2, lwd = 3)
   multiplot(p1, p2, p3, cols=3)
@@ -315,17 +323,17 @@ if(phi_as_factor){
 if(gamma_as_factor){
   shapiro_min = min(shapiro_data$z)
   shapiro_max = max(shapiro_data$z)
-  cols = gg_color_hue(3)
+  colours = gg_color_hue(3)
   p1 = ggplot(shapiro_data[shapiro_data$gamma_factors == 'low',], aes(x=y, y=z))+
-    geom_point(col = cols[1])+geom_smooth(method = lm,se=FALSE,col =cols[1])+ xlab(bquote(phi))+
+    geom_point(col = colours[1])+geom_smooth(method = lm,se=FALSE,col =cols[1])+ xlab(bquote(phi))+
     ylab(expression(frac(1,'Shapiro-Wilk Statistic')))+ggtitle(bquote(gamma~'<'~.(round(gamma_boundaries[1],5))))+
     ylim(shapiro_min,shapiro_max)
   p2 = ggplot(shapiro_data[shapiro_data$gamma_factors == 'medium',], aes(x=y, y=z))+
-    geom_point(col = cols[2])+geom_smooth(method = lm,se=FALSE,col =cols[2])+ xlab(bquote(phi))+
+    geom_point(col = colours[2])+geom_smooth(method = lm,se=FALSE,col =cols[2])+ xlab(bquote(phi))+
     ggtitle(bquote(.(round(gamma_boundaries[1],5))~'<'~gamma~'<'~.(round(gamma_boundaries[2],5))))+
     ylim(shapiro_min,shapiro_max)
   p3 = ggplot(shapiro_data[shapiro_data$gamma_factors == 'high',], aes(x=y, y=z))+
-    geom_point(col = cols[2])+geom_smooth(method = lm,se=FALSE,col =cols[2])+ xlab(bquote(phi))+
+    geom_point(col = colours[3])+geom_smooth(method = lm,se=FALSE,col =cols[2])+ xlab(bquote(phi))+
     ggtitle(bquote(.(round(gamma_boundaries[2],5))~'<'~gamma))+
     ylim(shapiro_min,shapiro_max)
   
@@ -334,3 +342,4 @@ if(gamma_as_factor){
   
 }
 
+print(nrow(collected_data))

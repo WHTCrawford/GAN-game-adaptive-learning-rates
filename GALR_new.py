@@ -10,7 +10,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Structure: loop through a big sample by taking minibatches, do this for a number of epochs . Do all of this for
 # however many trials,randomising the learning rate parameters each time
-number_of_trails = 50
+number_of_trails = 200
 number_of_epochs = 100
 mini_batch_size = 10
 sample_size = 2000
@@ -111,10 +111,10 @@ start_time = time.time()
 
 for it in simuls:
     # sample parameters
-    gamma_vec = np.random.uniform(0.00001,0.1,3)
-    phi_vec = np.random.uniform(0.00001, 0.1, 3)
+    gamma_vec = np.random.uniform(0.00001,0.1,5)
+    phi_vec = np.random.uniform(0.00001, 0.1, 5)
     phi_vec[0] = min(gamma_vec)*0.0000001 # make sure the 'zero' phi is many times smaller than the smallest gamma
-                                          # cant actually make it zero as it causes errors sometimes
+                                          # dont want to set to zero to avoid potentialy dividing by zero in adjuster
 
     res_matrix = np.zeros((len(gamma_vec) * len(phi_vec), sample_size))
     gamma_out_vec, phi_out_vec = np.zeros((len(gamma_vec) * len(phi_vec))), np.zeros((len(gamma_vec) * len(phi_vec)))
@@ -133,6 +133,7 @@ for it in simuls:
 
             with tf.Session() as sess:
                 tf.global_variables_initializer().run()
+                # writer = tf.summary.FileWriter('./graphs', sess.graph)
                 for step in range(1, learn_steps):
                     start_index = ((step - 1) * mini_batch_size) % sample_size
                     end_index = (step * mini_batch_size) % sample_size
@@ -148,6 +149,7 @@ for it in simuls:
                 gamma_out_vec[row] = k
                 phi_out_vec[row] = p
                 row = row+1
+                # writer.close()
 
                 # sns.distplot(generated, hist=False, rug=False)
                 # sns.distplot(real_dist, hist=False, rug=False)
