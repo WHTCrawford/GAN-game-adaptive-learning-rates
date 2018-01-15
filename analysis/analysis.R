@@ -43,9 +43,7 @@ cols = gg_color_hue(2)
 data_path = paste('/Users/Billy/PycharmProjects/GALR/data/',sub_folder, sep = '')
 setwd(data_path)
 
-files = list.files(pattern = '\\.csv')
-tables = lapply(files, read.csv, header = FALSE)
-collected_data =do.call(rbind , tables)
+collected_data = read.csv('output.csv')
 collected_data = na.omit(collected_data)
 colnames(collected_data) = c('Gamma','Phi',3:ncol(collected_data))
 

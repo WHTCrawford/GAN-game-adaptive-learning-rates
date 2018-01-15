@@ -11,9 +11,9 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # Structure: loop through a big sample by taking minibatches, do this for a number of epochs . Do all of this for
 # however many trials,randomising the learning rate parameters each time
 number_of_trails = 200
-number_of_epochs = 10 # 100
+number_of_epochs = 100
 mini_batch_size = 10
-sample_size = 200 # 2000
+sample_size = 2000
 learn_steps = (number_of_epochs*sample_size) / mini_batch_size
 hidden_layer_size_d = 6
 hidden_layer_size_g = 5
