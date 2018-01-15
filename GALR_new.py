@@ -11,9 +11,9 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # Structure: loop through a big sample by taking minibatches, do this for a number of epochs . Do all of this for
 # however many trials,randomising the learning rate parameters each time
 number_of_trails = 200
-number_of_epochs = 100
+number_of_epochs = 10 # 100
 mini_batch_size = 10
-sample_size = 2000
+sample_size = 200 # 2000
 learn_steps = (number_of_epochs*sample_size) / mini_batch_size
 hidden_layer_size_d = 6
 hidden_layer_size_g = 5
@@ -78,7 +78,7 @@ phi_g = tf.placeholder(tf.float32)
 phi_d = tf.placeholder(tf.float32)
 gamma = tf.placeholder(tf.float32)
 adjuster1 = (1/2 * tf.log(phi_d/(2*phi_g +phi_d))) / tf.log(0.25)
-adjuster = tf.maximum(0,adjuster1)
+adjuster = tf.maximum(0.0, adjuster1)
 
 V = tf.minimum(tf.reduce_mean(tf.log(D1)+tf.log(1-D2)),0)
 V1 = tf.where(tf.is_nan(V), tf.zeros_like(V), V)
@@ -101,19 +101,14 @@ train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, va
 # train_d = tf.train.MomentumOptimizer(learning_rate_d,0.9).minimize(loss_d, var_list=d_parameters)
 
 data_directory = '/Users/Billy/PycharmProjects/GALR/data/gd'
-
-f = open('recently_completed_trial.txt','r')
-start_line = int(f.read())+1
-f.close()
-
-simuls = range(start_line,start_line+number_of_trails)
+os.chdir(data_directory)
 
 start_time = time.time()
 
-for it in simuls:
+for it in range(1,number_of_trails):
     # sample parameters
-    gamma_vec = np.random.uniform(0.00001,0.1,5)
-    phi_vec = np.random.uniform(0.00001, 0.1, 5)
+    gamma_vec = np.random.uniform(0.00001,0.1,2)
+    phi_vec = np.random.uniform(0.00001, 0.1, 2)
     phi_vec[0] = min(gamma_vec)*0.0000001 # make sure the 'zero' phi is many times smaller than the smallest gamma
                                           # dont want to set to zero to avoid potentialy dividing by zero in adjuster
 
@@ -127,7 +122,7 @@ for it in simuls:
             generator_input = np.random.uniform(0, 1, (sample_size, 1))
             real_dist = np.random.normal(real_mean, real_sd, (sample_size, 1))
 
-            print 'Trial: {}/{}'.format(it,simuls[len(simuls)-1])
+            print 'Trial: {}/{}'.format(it,number_of_trails)
             print 'Step: {}/{}'.format(i*len(phi_vec)+j+1, len(phi_vec)*len(gamma_vec))
             print 'Phi: {0}'.format(p)
             print 'Gamma: {0}'.format(k)
@@ -163,12 +158,8 @@ for it in simuls:
     output_dataframe1 = pd.concat([gamma_dataframe.reset_index(drop=True), phi_dataframe], axis=1)
     output_dataframe2 = pd.concat([output_dataframe1.reset_index(drop=True), res_dataframe], axis=1)
 
-    pd.DataFrame.to_csv(output_dataframe2, data_directory + '/output{0}.csv'.format(it), sep=',', header=False,
-                        float_format='%.7f', index=False)
-
-    f = open('recently_completed_trial.txt', 'w')
-    f.write(str(it))
-    f.close()
+    with open("output1.csv", 'a') as f:
+        output_dataframe2.to_csv(f, sep=',', header=False, float_format='%.7f', index=False)
 
 
 print 'Total time taken: {0} seconds'.format(time.time()- start_time)

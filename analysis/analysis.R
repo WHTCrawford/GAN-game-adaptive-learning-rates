@@ -17,7 +17,7 @@ source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
 ############## WHICH PLOTS #######################
 ##################################################
 phi_against_gamma = TRUE
-plot_histograms = T
+plot_histograms = FALSE
 interactive_plot = F
 scatter_3D = FALSE
 loess_plot = T
@@ -49,9 +49,6 @@ collected_data =do.call(rbind , tables)
 collected_data = na.omit(collected_data)
 colnames(collected_data) = c('Gamma','Phi',3:ncol(collected_data))
 
-
-sum(collected_data$Phi ==min(collected_data$Phi)) # how many phi zeroes have we collected
-
 gamma_boundaries= c(min(collected_data$Gamma)+
                       (max(collected_data$Gamma)-min(collected_data$Gamma))/3 ,
                     min(collected_data$Gamma)+
@@ -65,6 +62,10 @@ if(phi_against_gamma){
   cols = gg_color_hue(2)
   ggplot(collected_data,aes(x = Gamma, y = Phi))+geom_point(col=cols[1])+xlab(bquote(gamma))+ylab(bquote(phi))
 }
+
+nrow(collected_data)
+mean(collected_data$Phi == min(collected_data$Phi)) # proportion phi zeroes have we collected
+
 
 # create 9 paneled histogram picture
 
@@ -342,4 +343,5 @@ if(gamma_as_factor){
   
 }
 
-print(nrow(collected_data))
+
+
