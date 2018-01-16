@@ -105,7 +105,7 @@ os.chdir(data_directory)
 
 start_time = time.time()
 
-for it in range(1,number_of_trails):
+for it in range(1,number_of_trails+1):
     # sample parameters
     gamma_vec = np.random.uniform(0.00001,0.1,2)
     phi_vec = np.random.uniform(0.00001, 0.1, 2)
@@ -122,8 +122,7 @@ for it in range(1,number_of_trails):
             generator_input = np.random.uniform(0, 1, (sample_size, 1))
             real_dist = np.random.normal(real_mean, real_sd, (sample_size, 1))
 
-            print 'Trial: {}/{}'.format(it,number_of_trails)
-            print 'Step: {}/{}'.format(i*len(phi_vec)+j+1, len(phi_vec)*len(gamma_vec))
+            print 'Trial: {}/{}'.format(it,number_of_trails+1)
             print 'Phi: {0}'.format(p)
             print 'Gamma: {0}'.format(k)
 
@@ -158,7 +157,7 @@ for it in range(1,number_of_trails):
     output_dataframe1 = pd.concat([gamma_dataframe.reset_index(drop=True), phi_dataframe], axis=1)
     output_dataframe2 = pd.concat([output_dataframe1.reset_index(drop=True), res_dataframe], axis=1)
 
-    with open("output1.csv", 'a') as f:
+    with open("output.csv", 'a') as f:
         output_dataframe2.to_csv(f, sep=',', header=False, float_format='%.7f', index=False)
 
 

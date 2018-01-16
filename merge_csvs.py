@@ -4,7 +4,7 @@ start_file_number = 2
 end_file_number = 438
 
 
-fout=open("output.csv","w")
+fout=open("output_merged.csv","w")
 for num in range(start_file_number,end_file_number+1):
     f = open("output"+str(num)+".csv")
     for line in f:
