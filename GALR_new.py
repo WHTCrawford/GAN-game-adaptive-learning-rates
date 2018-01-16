@@ -107,8 +107,8 @@ start_time = time.time()
 
 for it in range(1,number_of_trails+1):
     # sample parameters
-    gamma_vec = np.random.uniform(0.00001,0.1,2)
-    phi_vec = np.random.uniform(0.00001, 0.1, 2)
+    gamma_vec = np.random.uniform(0.00001,0.1,4)
+    phi_vec = np.random.uniform(0.00001, 0.1, 4)
     phi_vec[0] = min(gamma_vec)*0.0000001 # make sure the 'zero' phi is many times smaller than the smallest gamma
                                           # dont want to set to zero to avoid potentialy dividing by zero in adjuster
 
@@ -122,7 +122,7 @@ for it in range(1,number_of_trails+1):
             generator_input = np.random.uniform(0, 1, (sample_size, 1))
             real_dist = np.random.normal(real_mean, real_sd, (sample_size, 1))
 
-            print 'Trial: {}/{}'.format(it,number_of_trails+1)
+            print 'Trial: {}/{}'.format(it,number_of_trails)
             print 'Phi: {0}'.format(p)
             print 'Gamma: {0}'.format(k)
 
