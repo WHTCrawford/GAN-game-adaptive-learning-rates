@@ -10,7 +10,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Structure: loop through a big sample by taking minibatches, do this for a number of epochs . Do all of this for
 # however many trials,randomising the learning rate parameters each time
-number_of_trails = 200
+number_of_trails = 6
 number_of_epochs = 100
 mini_batch_size = 10
 sample_size = 2000
@@ -107,8 +107,8 @@ start_time = time.time()
 
 for it in range(1,number_of_trails+1):
     # sample parameters
-    gamma_vec = np.random.uniform(0.00001,0.1,4)
-    phi_vec = np.random.uniform(0.00001, 0.1, 4)
+    gamma_vec = np.random.uniform(0.00001,0.1,5)
+    phi_vec = np.random.uniform(0.00001, 0.1, 5)
     phi_vec[0] = min(gamma_vec)*0.0000001 # make sure the 'zero' phi is many times smaller than the smallest gamma
                                           # dont want to set to zero to avoid potentialy dividing by zero in adjuster
 
@@ -123,6 +123,7 @@ for it in range(1,number_of_trails+1):
             real_dist = np.random.normal(real_mean, real_sd, (sample_size, 1))
 
             print 'Trial: {}/{}'.format(it,number_of_trails)
+            print 'Step: {}/{}'.format(row+1, len(gamma_vec) * len(phi_vec))
             print 'Phi: {0}'.format(p)
             print 'Gamma: {0}'.format(k)
 

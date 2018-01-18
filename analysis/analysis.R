@@ -64,7 +64,6 @@ if(phi_against_gamma){
 nrow(collected_data)
 mean(collected_data$Phi == min(collected_data$Phi)) # proportion phi zeroes have we collected
 
-
 # create 9 paneled histogram picture
 
 if(plot_histograms){ 
