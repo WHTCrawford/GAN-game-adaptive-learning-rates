@@ -16,11 +16,11 @@ source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
 
 ############## WHICH PLOTS #######################
 ##################################################
-phi_against_gamma = TRUE
+phi_against_gamma = F
 plot_histograms = FALSE
 interactive_plot = F
 scatter_3D = FALSE
-loess_plot = T
+loess_plot = F
 phi_as_factor = F
 gamma_as_factor = F
 
@@ -341,4 +341,25 @@ if(gamma_as_factor){
 }
 
 
+prop_greater = function(row){
+  if(shapiro_data$y[row] == 0){
+    same_gamma = shapiro_data[shapiro_data$x == shapiro_data$x[row],]
+    if(nrow(same_gamma)>1){
+      proportion_greater = mean(same_gamma$z > shapiro_data$z[row])
+      return(proportion_greater)
+    }
+  }
+  else{
+    return(NA)
+  }
+}
+
+proportions = na.omit(as.numeric(sapply(1:nrow(shapiro_data),prop_greater)))
+
+length(shapiro_data$x[shapiro_data$y == 0])
+len
+
+plot(shapiro_data$x[shapiro_data$y == 0], proportions, pch = '.')
+
+mean(proportions)
 

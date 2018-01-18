@@ -10,7 +10,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Structure: loop through a big sample by taking minibatches, do this for a number of epochs . Do all of this for
 # however many trials,randomising the learning rate parameters each time
-number_of_trails = 6
+number_of_trails = 200
 number_of_epochs = 100
 mini_batch_size = 10
 sample_size = 2000
@@ -88,11 +88,11 @@ learning_rate_g = gamma + phi_g*(1 + tf.tanh(adjuster*V1))
 
 # Train step
 
-# train_g = tf.train.AdamOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)
-# train_d = tf.train.AdamOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
+train_g = tf.train.AdamOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)
+train_d = tf.train.AdamOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
 
-train_g = tf.train.GradientDescentOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)
-train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
+# train_g = tf.train.GradientDescentOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)
+# train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
 
 # train_g = tf.train.MomentumOptimizer(learning_rate_g,0.6).minimize(loss_g, var_list=g_parameters)
 # train_d = tf.train.MomentumOptimizer(learning_rate_d,0.6).minimize(loss_d, var_list=d_parameters)
@@ -100,15 +100,15 @@ train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, va
 # train_g = tf.train.MomentumOptimizer(learning_rate_g,0.9).minimize(loss_g, var_list=g_parameters)
 # train_d = tf.train.MomentumOptimizer(learning_rate_d,0.9).minimize(loss_d, var_list=d_parameters)
 
-data_directory = '/Users/Billy/PycharmProjects/GALR/data/gd'
+data_directory = '/Users/Billy/PycharmProjects/GALR/data/adam'
 os.chdir(data_directory)
 
 start_time = time.time()
 
 for it in range(1,number_of_trails+1):
     # sample parameters
-    gamma_vec = np.random.uniform(0.00001,0.1,5)
-    phi_vec = np.random.uniform(0.00001, 0.1, 5)
+    gamma_vec = np.random.uniform(0.00001,0.1,4)
+    phi_vec = np.random.uniform(0.00001, 0.1, 4)
     phi_vec[0] = min(gamma_vec)*0.0000001 # make sure the 'zero' phi is many times smaller than the smallest gamma
                                           # dont want to set to zero to avoid potentialy dividing by zero in adjuster
 
