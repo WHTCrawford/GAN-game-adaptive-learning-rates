@@ -20,9 +20,10 @@ phi_against_gamma = F
 plot_histograms = FALSE
 interactive_plot = F
 scatter_3D = FALSE
-loess_plot = F
+loess_plot = T
 phi_as_factor = F
 gamma_as_factor = F
+compare_means = F
 
 ##################################################
 sub_folder = 'gd'
@@ -231,7 +232,7 @@ phi_gamma_data = collected_data[non_collapsed_indices, 1:2] # remove complete mo
 normal_data = normal_data[non_collapsed_indices, ] # remove complete mode collapse
 
 
-shapiro_stats = 1-sapply(1:nrow(normal_data),pull_shapiro)
+shapiro_stats = 1- sapply(1:nrow(normal_data),pull_shapiro)
 
 shapiro_data = data.frame(x = phi_gamma_data$Gamma, y = phi_gamma_data$Phi,z = shapiro_stats)
 
@@ -340,26 +341,28 @@ if(gamma_as_factor){
   
 }
 
-
-prop_greater = function(row){
-  if(shapiro_data$y[row] == 0){
-    same_gamma = shapiro_data[shapiro_data$x == shapiro_data$x[row],]
-    if(nrow(same_gamma)>1){
-      proportion_greater = mean(same_gamma$z > shapiro_data$z[row])
-      return(proportion_greater)
-    }
-  }
-  else{
-    return(NA)
-  }
+if(compare_means){
+  
+  phi_zeroes =  shapiro_data[shapiro_data$y == 0,]
+  phi_not_zeroes = shapiro_data[shapiro_data$y != 0,]
+  
+  plot(phi_zeroes$x,phi_zeroes$z, pch = '.')
+  points(phi_not_zeroes$x,phi_not_zeroes$z, pch = '.', col = 'red')
+  abline(h = mean(phi_not_zeroes$z), col = 'red', lty = 2)
+  abline(h = mean(phi_zeroes$z), lty = 2)
+  
+  phi_small = shapiro_data[phi_boundaries[1] < shapiro_data$y &
+                             shapiro_data$y <= phi_boundaries[2],]
+  
+  plot(phi_zeroes$x,phi_zeroes$z, pch = '.')
+  points(phi_small$x,phi_small$z, pch = '.', col = 'red')
+  abline(h = mean(phi_small$z), col = 'red', lty = 2)
+  abline(h = mean(phi_zeroes$z), lty = 2)
+  
+  
+  
+  
+  
 }
 
-proportions = na.omit(as.numeric(sapply(1:nrow(shapiro_data),prop_greater)))
-
-length(shapiro_data$x[shapiro_data$y == 0])
-len
-
-plot(shapiro_data$x[shapiro_data$y == 0], proportions, pch = '.')
-
-mean(proportions)
 
