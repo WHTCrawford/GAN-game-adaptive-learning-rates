@@ -109,7 +109,7 @@ for it in range(1,number_of_trails+1):
     # sample parameters
     gamma_vec = np.random.uniform(0.00001,0.1,4)
     phi_vec = np.random.uniform(0.00001, 0.1, 4)
-    phi_vec[0] = 0.0 # min(gamma_vec)*0.000000001 # make sure the 'zero' phi is many times smaller than the smallest gamma
+    phi_vec[0] = min(gamma_vec)*0.000000001 # make sure the 'zero' phi is many times smaller than the smallest gamma
                                           # dont want to set to zero to avoid potentialy dividing by zero in adjuster
 
     res_matrix = np.zeros((len(gamma_vec) * len(phi_vec), sample_size))
