@@ -17,16 +17,17 @@ source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
 ############## WHICH PLOTS #######################
 ##################################################
 phi_against_gamma = F
-plot_histograms = FALSE
+plot_histograms = T
 interactive_plot = F
 scatter_3D = FALSE
-loess_plot = T
+loess_plot = F
+plot_mean_sd = F
 phi_as_factor = F
 gamma_as_factor = F
 compare_means = F
 
 ##################################################
-sub_folder = 'gd'
+sub_folder = 'adam'
 
 ##################################################
 ################COLOURS###########################
@@ -164,8 +165,6 @@ if(plot_histograms){
       title9 = bquote(.(round(gamma_boundaries[2],5))~'<'~gamma~
                         ', '~.(round(phi_boundaries[2],5))~'<'~phi)
       
-      
-      
       # ggplot 
       
       p1 = ggplot(data.frame(x=panel_1), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
@@ -212,16 +211,6 @@ if(plot_histograms){
 normal_data = collected_data[,3:ncol(collected_data)]
 normal_data = normal_data - 6 # de-mean
 
-
-pull_shapiro=function(row){
-  return(as.numeric(shapiro.test(as.numeric(normal_data[row,]))$statistic))
-}
-
-pull_shapiro2=function(row){
-  return(as.numeric(shapiro.test(as.numeric(normal_data[row,]))$p.value))
-}
-
-
 row_var = function(row){
   return(var(as.numeric(normal_data[row,])))
 }
@@ -232,7 +221,15 @@ phi_gamma_data = collected_data[non_collapsed_indices, 1:2] # remove complete mo
 normal_data = normal_data[non_collapsed_indices, ] # remove complete mode collapse
 
 
-shapiro_stats = 1- sapply(1:nrow(normal_data),pull_shapiro)
+pull_shapiro=function(data_set,row){ # write function to collect the shapiro statistics
+  return(-as.numeric(shapiro.test(as.numeric(data_set[row,]))$statistic))
+}
+
+pull_shapiro2=function(data_set,row){
+  return(as.numeric(shapiro.test(as.numeric(data_set[row,]))$p.value))
+}
+
+shapiro_stats = sapply(1:nrow(normal_data),pull_shapiro, data_set = normal_data)
 
 shapiro_data = data.frame(x = phi_gamma_data$Gamma, y = phi_gamma_data$Phi,z = shapiro_stats)
 
@@ -252,9 +249,65 @@ if(loess_plot){
         persp(seq(min(shapiro_data$x), max(shapiro_data$x), length.out = size_of_grid),
               y = seq(min(shapiro_data$y),  max(shapiro_data$y), length.out = size_of_grid),
               predicted_shapiro, theta = theta_1,phi = 20, # theta = -45,phi = 20,
-              xlab = "Gamma", ylab = "Phi",zlab = 'Shapiro-Wilk Statistic', main = "")
+              xlab = "Gamma", ylab = "Phi",zlab = '-Shapiro-Wilk Statistic', main = "")
     }
 }  
+
+
+sd_row = function(data_set, row){
+  return(sd(data_set[row,]))
+}
+
+mean_sd_data_set = data.frame(gamma = phi_gamma_data$Gamma , phi = phi_gamma_data$Phi,
+                              mu = rowMeans(collected_data[,3:ncol(collected_data)]), 
+                              sd = sapply(1:nrow(collected_data),sd_row, data_set = collected_data[,3:ncol(collected_data)]))
+
+if(plot_mean_sd){
+    cols = gg_color_hue(2)
+    
+    size_of_grid = 500
+    
+    fit_loess = loess(mu~gamma*phi,mean_sd_data_set, span = 0.1)
+    
+    gamma = seq(min(mean_sd_data_set$gamma), max(mean_sd_data_set$gamma), length.out = size_of_grid)
+    phi = seq(min(mean_sd_data_set$phi),  max(mean_sd_data_set$phi), length.out = size_of_grid)
+    
+    g_p_grid = expand.grid(list(gamma = seq(min(mean_sd_data_set$gamma), max(mean_sd_data_set$gamma), length.out = size_of_grid), 
+                                phi = seq(min(mean_sd_data_set$phi),  max(mean_sd_data_set$phi), length.out = size_of_grid)))
+    g_p_grid$mu = as.numeric(predict(fit_loess, newdata = g_p_grid))
+    
+    print(ggplot(g_p_grid, aes(x = gamma, y = phi, z = mu)) +geom_raster(aes(fill = mu)) +
+      geom_contour(aes(z = mu, colour = factor(..level.. == 6, 
+                                       levels = c(F, T))),breaks = -10:10) + 
+      scale_colour_manual(values = c("black", 'lightblue')) +
+      # scale_fill_gradientn(colours=c('black',"white"))+
+      # scale_fill_gradientn(colours=c('black',"lightblue"))+
+      guides(colour = FALSE))
+    
+    
+    
+    fit_loess = loess(sd~gamma*phi,mean_sd_data_set, span = 0.1)
+    
+    gamma = seq(min(mean_sd_data_set$gamma), max(mean_sd_data_set$gamma), length.out = size_of_grid)
+    phi = seq(min(mean_sd_data_set$phi),  max(mean_sd_data_set$phi), length.out = size_of_grid)
+    
+    g_p_grid = expand.grid(list(gamma = seq(min(mean_sd_data_set$gamma), max(mean_sd_data_set$gamma), length.out = size_of_grid), 
+                                phi = seq(min(mean_sd_data_set$phi),  max(mean_sd_data_set$phi), length.out = size_of_grid)))
+    g_p_grid$sd = as.numeric(predict(fit_loess, newdata = g_p_grid))
+    
+    print(ggplot(g_p_grid, aes(x = gamma, y = phi, z = sd)) +geom_raster(aes(fill = sd)) +
+      geom_contour(aes(z = sd, 
+                       colour = factor(..level.. == 1, 
+                                       levels = c(F, T))),
+                   breaks = seq(0,1.1, length.out = 80)) + 
+      scale_colour_manual(values = c("black", 'lightblue')) +
+      guides(colour = FALSE))
+  
+}  
+
+
+
+
 
 if(scatter_3D){
     with(shapiro_data, {
@@ -365,4 +418,5 @@ if(compare_means){
   
 }
 
+mean(shapiro_data$z)
 
