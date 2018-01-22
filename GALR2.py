@@ -24,21 +24,19 @@ real_sd = 1
 
 # discriminator and generator NNs
 def discriminator(input, parameters):
-    pre_0 = tf.to_float(input)
-    activ_1 = tf.add(tf.matmul(pre_0, parameters[0]), parameters[1])
-    pre_1 = tf.tanh(activ_1)
-    activ_2 = tf.add(tf.matmul(pre_1, parameters[2]), parameters[3])
-    pre_2 = tf.tanh(activ_2)
-    activ_3 = tf.add(tf.matmul(pre_2, parameters[4]), parameters[5])
-    output = tf.sigmoid(activ_3)
+    pre_1 = tf.add(tf.matmul(tf.to_float(input), parameters[0]), parameters[1])
+    activ_1 = tf.tanh(pre_1)
+    pre_2 = tf.add(tf.matmul(activ_1, parameters[2]), parameters[3])
+    activ_2 = tf.tanh(pre_2)
+    pre_3 = tf.add(tf.matmul(activ_2, parameters[4]), parameters[5])
+    output = tf.sigmoid(pre_3)
     return output
 
 
 def generator(input, parameters):
-    pre_0 = tf.to_float(input)
-    activ_1 = tf.add(tf.matmul(pre_0, parameters[0]), parameters[1])
-    pre_1 = tf.tanh(activ_1)
-    output = tf.add(tf.matmul(pre_1, parameters[2]), parameters[3])
+    pre_1 = tf.add(tf.matmul(tf.to_float(input), parameters[0]), parameters[1])
+    activ_1 = tf.tanh(pre_1)
+    output = tf.add(tf.matmul(activ_1, parameters[2]), parameters[3])
     return output
 
 
@@ -58,32 +56,31 @@ weight_g_2 = tf.Variable(tf.random_uniform([hidden_layer_size_g, 1], minval=0, m
 bias_g_2 = tf.Variable(tf.random_uniform([1], minval=0, maxval=1, dtype=tf.float32))
 
 
-
 g_parameters = [weight_g_1,bias_g_1, weight_g_2, bias_g_2]
 
 
 # losses
-x = tf.placeholder(tf.float32, shape=(None, 1))
-z = tf.placeholder(tf.float32, shape=(None, 1))
-with tf.variable_scope("Discrim") as scope:
-    D1 = discriminator(x, d_parameters)
+real_dist_placeholder = tf.placeholder(tf.float32, shape=(None, 1))
+generator_input_placeholder = tf.placeholder(tf.float32, shape=(None, 1))
+with tf.variable_scope("Discriminator") as scope:
+    d_output_real = discriminator(real_dist_placeholder, d_parameters)
     scope.reuse_variables()
-    D2 = discriminator(generator(z, g_parameters), d_parameters)
-loss_d = tf.reduce_mean(-tf.log(D1) - tf.log(1 - D2))
-loss_g = tf.reduce_mean(-tf.log(D2))
+    d_output_fake = discriminator(generator(generator_input_placeholder, g_parameters), d_parameters)
+loss_d = tf.reduce_mean(-tf.log(d_output_real) - tf.log(1 - d_output_fake))
+loss_g = tf.reduce_mean(-tf.log(d_output_fake))
 
 # Game Adaptive Learning Rate
 phi_g = tf.placeholder(tf.float32)
 phi_d = tf.placeholder(tf.float32)
 gamma = tf.placeholder(tf.float32)
-adjuster1 = (1/2 * tf.log(phi_d/(2*phi_g +phi_d))) / tf.log(0.25)
+adjuster1 = (1/2 * tf.log(phi_d/(2*phi_g + phi_d))) / tf.log(0.25)
 adjuster = tf.maximum(0.0, adjuster1)
 
-V = tf.minimum(tf.reduce_mean(tf.log(D1)+tf.log(1-D2)),0)
-V1 = tf.where(tf.is_nan(V), tf.zeros_like(V), V)
+V = tf.minimum(tf.reduce_mean(tf.log(d_output_real)+tf.log(1-d_output_fake)),0)
+# V1 = tf.where(tf.is_nan(V), tf.zeros_like(V), V)
 
-learning_rate_d = gamma-phi_d*tf.tanh(adjuster*V1)
-learning_rate_g = gamma + phi_g*(1 + tf.tanh(adjuster*V1))
+learning_rate_d = gamma-phi_d*tf.tanh(adjuster*V)
+learning_rate_g = gamma + phi_g*(1 + tf.tanh(adjuster*V))
 
 # Train step
 
@@ -108,8 +105,7 @@ for it in range(1,number_of_trails+1):
     # sample parameters
     gamma_vec = np.random.uniform(0.00001,0.1,4)
     phi_vec = np.random.uniform(0.00001, 0.1, 4)
-    phi_vec[0] = 0.0 # min(gamma_vec)*0.000000001 # make sure the 'zero' phi is many times smaller than the smallest gamma
-                                          # dont want to set to zero to avoid potentialy dividing by zero in adjuster
+    phi_vec[0] = 0.0
 
     res_matrix = np.zeros((len(gamma_vec) * len(phi_vec), batch_size))
     gamma_out_vec, phi_out_vec = np.zeros((len(gamma_vec) * len(phi_vec))), np.zeros((len(gamma_vec) * len(phi_vec)))
@@ -129,8 +125,10 @@ for it in range(1,number_of_trails+1):
                     generator_input = np.random.uniform(0, 1, (batch_size, 1))
                     real_dist = np.random.normal(real_mean, real_sd, (batch_size, 1))
 
-                    sess.run(train_d, feed_dict={x: real_dist, z: generator_input, phi_g: p,phi_d:p, gamma:k})
-                    sess.run(train_g, feed_dict={x: real_dist, z: generator_input, phi_g: p,phi_d:p,gamma:k})
+                    sess.run(train_d, feed_dict={real_dist_placeholder: real_dist,
+                                                 generator_input_placeholder: generator_input, phi_g: p,phi_d:p, gamma:k})
+                    sess.run(train_g, feed_dict={real_dist_placeholder: real_dist,
+                                                 generator_input_placeholder: generator_input, phi_g: p,phi_d:p,gamma:k})
 
                 generator_input = np.random.uniform(0, 1, (batch_size, 1))
                 real_dist = np.random.normal(real_mean, real_sd, (batch_size, 1))
