@@ -20,14 +20,14 @@ phi_against_gamma = F
 plot_histograms = T
 interactive_plot = F
 scatter_3D = FALSE
-loess_plot = F
+loess_plot = T
 plot_mean_sd = F
 phi_as_factor = F
 gamma_as_factor = F
 compare_means = F
 
 ##################################################
-sub_folder = 'adam'
+sub_folder = 'momentum0.6'
 
 ##################################################
 ################COLOURS###########################
@@ -42,7 +42,7 @@ cols = gg_color_hue(2)
 ##################################################
 ##################################################
 
-data_path = paste('/Users/Billy/PycharmProjects/GALR/data/',sub_folder, sep = '')
+data_path = paste('/Users/Billy/PycharmProjects/GALR/data2/',sub_folder, sep = '')
 setwd(data_path)
 
 collected_data = read.csv('output.csv')

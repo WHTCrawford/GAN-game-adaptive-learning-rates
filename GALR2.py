@@ -77,7 +77,6 @@ adjuster1 = (1/2 * tf.log(phi_d/(2*phi_g + phi_d))) / tf.log(0.25)
 adjuster = tf.maximum(0.0, adjuster1)
 
 V = tf.minimum(tf.reduce_mean(tf.log(d_output_real)+tf.log(1-d_output_fake)),0)
-# V1 = tf.where(tf.is_nan(V), tf.zeros_like(V), V)
 
 learning_rate_d = gamma-phi_d*tf.tanh(adjuster*V)
 learning_rate_g = gamma + phi_g*(1 + tf.tanh(adjuster*V))
@@ -103,8 +102,8 @@ start_time = time.time()
 
 for it in range(1,number_of_trails+1):
     # sample parameters
-    gamma_vec = np.random.uniform(0.00001,0.1,4)
-    phi_vec = np.random.uniform(0.00001, 0.1, 4)
+    gamma_vec = np.random.uniform(0.0000001,0.1,4)
+    phi_vec = np.random.uniform(0.0, 0.1, 4)
     phi_vec[0] = 0.0
 
     res_matrix = np.zeros((len(gamma_vec) * len(phi_vec), batch_size))
@@ -137,7 +136,12 @@ for it in range(1,number_of_trails+1):
                 res_matrix[row] = generated.reshape(batch_size)
                 gamma_out_vec[row] = k
                 phi_out_vec[row] = p
-                row = row+1
+                row = row + 1
+
+                print 'Mean of generated sample: {0}'.format(np.mean(generated))
+                print 'Standard Deviation of generated sample: {0}'.format(np.std(generated))
+
+
                 # writer.close()
 
                 # sns.distplot(generated, hist=False, rug=False)
