@@ -117,9 +117,6 @@ for it in range(1,number_of_trails+1):
     row =0
     for i, p in enumerate(phi_vec):
         for j, k in enumerate(gamma_vec):
-            # sample data
-
-
             print 'Trial: {}/{}'.format(it,number_of_trails)
             print 'Step: {}/{}'.format(row+1, len(gamma_vec) * len(phi_vec))
             print 'Phi: {0}'.format(p)
@@ -135,6 +132,9 @@ for it in range(1,number_of_trails+1):
                     sess.run(train_d, feed_dict={x: real_dist, z: generator_input, phi_g: p,phi_d:p, gamma:k})
                     sess.run(train_g, feed_dict={x: real_dist, z: generator_input, phi_g: p,phi_d:p,gamma:k})
 
+                generator_input = np.random.uniform(0, 1, (batch_size, 1))
+                real_dist = np.random.normal(real_mean, real_sd, (batch_size, 1))
+
                 generated = sess.run(generator(generator_input,g_parameters))
                 res_matrix[row] = generated.reshape(batch_size)
                 gamma_out_vec[row] = k
@@ -142,9 +142,9 @@ for it in range(1,number_of_trails+1):
                 row = row+1
                 # writer.close()
 
-                sns.distplot(generated, hist=False, rug=False)
-                sns.distplot(real_dist, hist=False, rug=False)
-                plt.show()
+                # sns.distplot(generated, hist=False, rug=False)
+                # sns.distplot(real_dist, hist=False, rug=False)
+                # plt.show()
 
     res_dataframe = pd.DataFrame(data=res_matrix.astype(float))
     gamma_dataframe = pd.DataFrame(data=gamma_out_vec.astype(float))
