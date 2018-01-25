@@ -4,6 +4,7 @@ library(reshape2)
 library(plyr)
 library(ggplot2)
 library(scatterplot3d)
+suppressWarnings(library(data.table))
 library(plotly)
 library(lattice)
 source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
@@ -38,7 +39,13 @@ cols = gg_color_hue(2)
 data_path = paste('/Users/Billy/PycharmProjects/GALR/data2/',sub_folder, sep = '')
 setwd(data_path)
 
-collected_data = read.csv('output.csv')
+collected_data = fread('output.csv', header = F, sep = ',')
+
+
+collected_data[] = lapply(collected_data, function(x) {
+  if(is.factor(x)) as.numeric(as.character(x)) else x
+})
+
 collected_data = na.omit(collected_data)
 colnames(collected_data) = c('Gamma','Phi',3:ncol(collected_data))
 
@@ -212,8 +219,8 @@ phi_gamma_data = collected_data[non_collapsed_indices, 1:2] # remove complete mo
 normal_data = normal_data[non_collapsed_indices, ] # remove complete mode collapse
 collected_data = collected_data[non_collapsed_indices, ]
 
-shapiro_stats1 = apply(normal_data,1,shapiro.test)
-shapiro_stats1 = -as.numeric(lapply(shapiro_stats1, function(l) l[[1]]))
+shapiro_stats = apply(normal_data,1,shapiro.test)
+shapiro_stats = -as.numeric(lapply(shapiro_stats, function(l) l[[1]]))
 
 shapiro_data = data.frame(x = phi_gamma_data$Gamma, y = phi_gamma_data$Phi,z = shapiro_stats)
 

@@ -55,7 +55,7 @@ qqplot_by_row2 <- function(data_frame,title = '', title_font_size = 8,xlab ='The
   require(ggplot2)
   ggplot(qq) +
     stat_qq(aes(sample = resids, color = factor(name)))+
-    geom_abline(slope = 1, intercept = 0, col = line_colour, lty = 2)+
+    geom_abline(slope = 1, intercept = 0, col = line_colour, lty = 2, lwd = 3)+
     theme(legend.position="none")+labs(title=title)+
     theme(plot.title = element_text(size=title_font_size))+xlab(xlab)+ylab(ylab)+
     ylim(-3,3)+
