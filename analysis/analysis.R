@@ -1,11 +1,11 @@
 # Packages ################################################## 
 rm(list = ls(all=T))
-library(reshape2)
+suppressMessages(suppressWarnings(library(reshape2)))
 library(plyr)
-library(ggplot2)
+suppressMessages(suppressWarnings(library(ggplot2)))
 library(scatterplot3d)
-suppressWarnings(library(data.table))
-library(plotly)
+suppressMessages(suppressWarnings(library(data.table)))
+suppressMessages(suppressWarnings(library(plotly)))
 library(lattice)
 source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
 source('/Users/Billy/PycharmProjects/GALR/GAN-game-adaptive-learning-rates/analysis/gg_QQ_plot.R')
@@ -40,14 +40,10 @@ data_path = paste('/Users/Billy/PycharmProjects/GALR/data2/',sub_folder, sep = '
 setwd(data_path)
 
 collected_data = fread('output.csv', header = F, sep = ',')
-
-
-collected_data[] = lapply(collected_data, function(x) {
-  if(is.factor(x)) as.numeric(as.character(x)) else x
-})
-
+collected_data = data.matrix(collected_data)
 collected_data = na.omit(collected_data)
-colnames(collected_data) = c('Gamma','Phi',3:ncol(collected_data))
+collected_data= data.frame(Gamma =collected_data[,1] ,
+                           Phi= collected_data[,2] ,collected_data[,3:ncol(collected_data)])
 
 gamma_boundaries= c(min(collected_data$Gamma)+
                       (max(collected_data$Gamma)-min(collected_data$Gamma))/3 ,
