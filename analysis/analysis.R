@@ -1,10 +1,4 @@
-##################################################
-##################################################
-#
-#   
-#
-##################################################
-##################################################
+# Packages ################################################## 
 rm(list = ls(all=T))
 library(reshape2)
 library(plyr)
@@ -15,8 +9,7 @@ library(lattice)
 source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
 source('/Users/Billy/PycharmProjects/GALR/GAN-game-adaptive-learning-rates/analysis/gg_QQ_plot.R')
 
-############## WHICH PLOTS #######################
-##################################################
+# Which plots to show ################################################## 
 phi_against_gamma = F
 plot_histograms = F
 plot_QQs = T
@@ -28,11 +21,10 @@ phi_as_factor = F
 gamma_as_factor = F
 compare_means = F
 
-##################################################
-sub_folder = 'momentum0.6'
+# Sub folder ################################################## 
+sub_folder = 'gd'
 
-##################################################
-################COLOURS###########################
+# Make colours  ################################################## 
 
 gg_color_hue <- function(n) {
   hues = seq(15, 375, length = n + 1)
@@ -41,8 +33,7 @@ gg_color_hue <- function(n) {
 
 cols = gg_color_hue(2)
 
-##################################################
-##################################################
+# Collect data ################################################## 
 
 data_path = paste('/Users/Billy/PycharmProjects/GALR/data2/',sub_folder, sep = '')
 setwd(data_path)
@@ -68,7 +59,7 @@ if(phi_against_gamma){
 nrow(collected_data)
 mean(collected_data$Phi == min(collected_data$Phi)) # proportion phi zeroes have we collected
 
-# create 9 paneled histogram picture
+# Histograms ################################################## 
 
 if(plot_histograms){ 
       
@@ -210,34 +201,23 @@ if(plot_histograms){
       print(paste('Sample size:',sample_size))
 }
 
-collected_data[,3:ncol(collected_data)] = collected_data[,3:ncol(collected_data)] - 6 # de-mean
+# Shapiro ################################################## 
 
-# plot shapiro surface
+collected_data[,3:ncol(collected_data)] = collected_data[,3:ncol(collected_data)] - 6 # de-mean
 normal_data = collected_data[,3:ncol(collected_data)]
 
-row_var = function(row){
-  return(var(as.numeric(normal_data[row,])))
-}
-
-non_collapsed_indices = ! sapply(1:nrow(normal_data),row_var) ==0
+non_collapsed_indices = ! apply(normal_data,1,var) == 0
 
 phi_gamma_data = collected_data[non_collapsed_indices, 1:2] # remove complete mode collapse
 normal_data = normal_data[non_collapsed_indices, ] # remove complete mode collapse
+collected_data = collected_data[non_collapsed_indices, ]
 
-
-pull_shapiro=function(data_set,row){ # write function to collect the shapiro statistics
-  return(-as.numeric(shapiro.test(as.numeric(data_set[row,]))$statistic))
-}
-
-pull_shapiro2=function(data_set,row){
-  return(as.numeric(shapiro.test(as.numeric(data_set[row,]))$p.value))
-}
-
-shapiro_stats = sapply(1:nrow(normal_data),pull_shapiro, data_set = normal_data)
+shapiro_stats1 = apply(normal_data,1,shapiro.test)
+shapiro_stats1 = -as.numeric(lapply(shapiro_stats1, function(l) l[[1]]))
 
 shapiro_data = data.frame(x = phi_gamma_data$Gamma, y = phi_gamma_data$Phi,z = shapiro_stats)
 
-
+# QQ plots ################################################## 
 if(plot_QQs){ 
   
   entries_per_group = 1
@@ -275,21 +255,42 @@ if(plot_QQs){
   panel_9 = collected_data[gamma_boundaries[2] < collected_data$Gamma &  
                              phi_boundaries[2]< collected_data$Phi,3:ncol(collected_data)]
   
-  # take a sample of the rows
-  min_rows = min(c(nrow(panel_1),nrow(panel_2),nrow(panel_3),nrow(panel_4),nrow(panel_5),
-                   nrow(panel_6),nrow(panel_7),nrow(panel_8),nrow(panel_9)))
+  # take the best shapiros
+  shapiro_1 = shapiro_data[collected_data$Gamma<= gamma_boundaries[1] & 
+                             collected_data$Phi == phi_boundaries[1],]
+  shapiro_2 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
+                             collected_data$Gamma <= gamma_boundaries[2] &
+                             collected_data$Phi == phi_boundaries[1],]
+  shapiro_3 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma & 
+                             collected_data$Phi == phi_boundaries[1],]
+  shapiro_4 = shapiro_data[collected_data$Gamma <= gamma_boundaries[1] & 
+                             phi_boundaries[1] < collected_data$Phi &
+                             collected_data$Phi <= phi_boundaries[2],]
+  shapiro_5 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
+                             collected_data$Gamma <= gamma_boundaries[2] &
+                             phi_boundaries[1] < collected_data$Phi &
+                             collected_data$Phi <= phi_boundaries[2],]
+  shapiro_6 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma & 
+                             phi_boundaries[1] < collected_data$Phi &
+                             collected_data$Phi <= phi_boundaries[2],]
+  shapiro_7 = shapiro_data[collected_data$Gamma <= gamma_boundaries[1] & 
+                             phi_boundaries[2]< collected_data$Phi,]
+  shapiro_8 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
+                             collected_data$Gamma <= gamma_boundaries[2] &
+                             phi_boundaries[2]< collected_data$Phi,]
+  shapiro_9 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma &  
+                             phi_boundaries[2]< collected_data$Phi,]
   
-  sample_size = min(entries_per_group,min_rows)
   
-  panel_1 = panel_1[sample(1:nrow(panel_1),size = sample_size,replace = F),]
-  panel_2 = panel_2[sample(1:nrow(panel_2),size = sample_size,replace = F),]
-  panel_3 = panel_3[sample(1:nrow(panel_3),size = sample_size,replace = F),]
-  panel_4 = panel_4[sample(1:nrow(panel_4),size = sample_size,replace = F),]
-  panel_5 = panel_5[sample(1:nrow(panel_5),size = sample_size,replace = F),]
-  panel_6 = panel_6[sample(1:nrow(panel_6),size = sample_size,replace = F),]
-  panel_7 = panel_7[sample(1:nrow(panel_7),size = sample_size,replace = F),]
-  panel_8 = panel_8[sample(1:nrow(panel_8),size = sample_size,replace = F),]
-  panel_9 = panel_9[sample(1:nrow(panel_9),size = sample_size,replace = F),]
+  panel_1 = panel_1[order(as.numeric(shapiro_1$z), decreasing = T)[1:entries_per_group],]
+  panel_2 = panel_2[order(as.numeric(shapiro_2$z), decreasing = T)[1:entries_per_group],]
+  panel_3 = panel_3[order(as.numeric(shapiro_3$z), decreasing = T)[1:entries_per_group],]
+  panel_4 = panel_4[order(as.numeric(shapiro_4$z), decreasing = T)[1:entries_per_group],]
+  panel_5 = panel_5[order(as.numeric(shapiro_5$z), decreasing = T)[1:entries_per_group],]
+  panel_6 = panel_6[order(as.numeric(shapiro_6$z), decreasing = T)[1:entries_per_group],]
+  panel_7 = panel_7[order(as.numeric(shapiro_7$z), decreasing = T)[1:entries_per_group],]
+  panel_8 = panel_8[order(as.numeric(shapiro_8$z), decreasing = T)[1:entries_per_group],]
+  panel_9 = panel_9[order(as.numeric(shapiro_9$z), decreasing = T)[1:entries_per_group],]
   
   # chart titles
   
@@ -331,10 +332,9 @@ if(plot_QQs){
   p9 = qqplot_by_row2(panel_9,title9,xlab = '',ylab = '')
   
   multiplot_QQ(p1, p2, p3, p4, p5, p6, p7, p8,p9, cols=3)
-  print(paste('Sample size:',sample_size))
 }
 
-
+# LOESS ################################################## 
 
 if(loess_plot){
   
@@ -357,13 +357,11 @@ if(loess_plot){
 }  
 
 
-sd_row = function(data_set, row){
-  return(sd(data_set[row,]))
-}
-
 mean_sd_data_set = data.frame(gamma = phi_gamma_data$Gamma , phi = phi_gamma_data$Phi,
                               mu = rowMeans(collected_data[,3:ncol(collected_data)]), 
-                              sd = sapply(1:nrow(collected_data),sd_row, data_set = collected_data[,3:ncol(collected_data)]))
+                              sd = apply(collected_data[,3:ncol(collected_data)],1,sd))
+
+# Mean and sd planes ################################################## 
 
 if(plot_mean_sd){
     cols = gg_color_hue(2)
@@ -410,7 +408,7 @@ if(plot_mean_sd){
 
 
 
-
+# 3d scatter ################################################## 
 
 if(scatter_3D){
     with(shapiro_data, {
@@ -423,6 +421,8 @@ if(scatter_3D){
       )
     })
 }
+
+# Interactive ################################################## 
 
 if(interactive_plot){
   plot_ly(shapiro_data, x = ~x, y = ~y, z = ~z) %>%
@@ -446,6 +446,8 @@ shapiro_data$gamma_factors = cut(shapiro_data$x, breaks = c(-Inf, gamma_boundari
 
 shapiro_data$phi_factors = cut(shapiro_data$y, breaks = c(-Inf, phi_boundaries, Inf), 
                                  labels = c('zero','low', 'high'), right = TRUE)
+
+# Factor plots ################################################## 
 
 if(phi_as_factor){
   shapiro_min = min(shapiro_data$z)
