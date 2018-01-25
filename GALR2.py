@@ -11,7 +11,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # Structure: in each trial generate parameters, then for number_of_epochs
 # generate a batch of size 'batch_size' each time from the input distribution and the real distribution
 # and train the GAN on it
-number_of_trails = 200
+number_of_trails = 800
 number_of_epochs = 10000
 batch_size = 1000
 hidden_layer_size_d = 6
@@ -86,16 +86,16 @@ learning_rate_g = gamma + phi_g*(1 + tf.tanh(adjuster*V))
 # train_g = tf.train.AdamOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)
 # train_d = tf.train.AdamOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
 
-# train_g = tf.train.GradientDescentOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)
-# train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
+train_g = tf.train.GradientDescentOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)
+train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
 
-train_g = tf.train.MomentumOptimizer(learning_rate_g,0.6).minimize(loss_g, var_list=g_parameters)
-train_d = tf.train.MomentumOptimizer(learning_rate_d,0.6).minimize(loss_d, var_list=d_parameters)
+# train_g = tf.train.MomentumOptimizer(learning_rate_g,0.6).minimize(loss_g, var_list=g_parameters)
+# train_d = tf.train.MomentumOptimizer(learning_rate_d,0.6).minimize(loss_d, var_list=d_parameters)
 
 # train_g = tf.train.MomentumOptimizer(learning_rate_g,0.9).minimize(loss_g, var_list=g_parameters)
 # train_d = tf.train.MomentumOptimizer(learning_rate_d,0.9).minimize(loss_d, var_list=d_parameters)
 
-data_directory = '/Users/Billy/PycharmProjects/GALR/data2/momentum0.6'
+data_directory = '/Users/Billy/PycharmProjects/GALR/data2/gd'
 os.chdir(data_directory)
 
 start_time = time.time()

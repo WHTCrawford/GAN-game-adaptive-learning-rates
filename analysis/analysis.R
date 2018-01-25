@@ -13,14 +13,16 @@ library(scatterplot3d)
 library(plotly)
 library(lattice)
 source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
+source('/Users/Billy/PycharmProjects/GALR/GAN-game-adaptive-learning-rates/analysis/gg_QQ_plot.R')
 
 ############## WHICH PLOTS #######################
 ##################################################
 phi_against_gamma = F
-plot_histograms = T
+plot_histograms = F
+plot_QQs = T
 interactive_plot = F
 scatter_3D = FALSE
-loess_plot = T
+loess_plot = F
 plot_mean_sd = F
 phi_as_factor = F
 gamma_as_factor = F
@@ -73,37 +75,37 @@ if(plot_histograms){
       entries_per_group = 10
       
       panel_1 = collected_data[collected_data$Gamma<= gamma_boundaries[1] & 
-                                 collected_data$Phi == phi_boundaries[1],3:1002]
+                                 collected_data$Phi == phi_boundaries[1],3:ncol(collected_data)]
       
       panel_2 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
                                  collected_data$Gamma <= gamma_boundaries[2] &
-                                 collected_data$Phi == phi_boundaries[1],3:1002]
+                                 collected_data$Phi == phi_boundaries[1],3:ncol(collected_data)]
       
       panel_3 = collected_data[gamma_boundaries[2] < collected_data$Gamma & 
-                                 collected_data$Phi == phi_boundaries[1],3:1002]
+                                 collected_data$Phi == phi_boundaries[1],3:ncol(collected_data)]
       
       panel_4 = collected_data[collected_data$Gamma <= gamma_boundaries[1] & 
                                   phi_boundaries[1] < collected_data$Phi &
-                                 collected_data$Phi <= phi_boundaries[2],3:1002]
+                                 collected_data$Phi <= phi_boundaries[2],3:ncol(collected_data)]
       
       panel_5 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
                                  collected_data$Gamma <= gamma_boundaries[2] &
                                  phi_boundaries[1] < collected_data$Phi &
-                                 collected_data$Phi <= phi_boundaries[2],3:1002]
+                                 collected_data$Phi <= phi_boundaries[2],3:ncol(collected_data)]
       
       panel_6 = collected_data[gamma_boundaries[2] < collected_data$Gamma & 
                                  phi_boundaries[1] < collected_data$Phi &
-                                 collected_data$Phi <= phi_boundaries[2],3:1002]
+                                 collected_data$Phi <= phi_boundaries[2],3:ncol(collected_data)]
       
       panel_7 = collected_data[collected_data$Gamma <= gamma_boundaries[1] & 
-                                  phi_boundaries[2]< collected_data$Phi,3:1002]
+                                  phi_boundaries[2]< collected_data$Phi,3:ncol(collected_data)]
       
       panel_8 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
                                  collected_data$Gamma <= gamma_boundaries[2] &
-                                 phi_boundaries[2]< collected_data$Phi,3:1002]
+                                 phi_boundaries[2]< collected_data$Phi,3:ncol(collected_data)]
       
       panel_9 = collected_data[gamma_boundaries[2] < collected_data$Gamma &  
-                                 phi_boundaries[2]< collected_data$Phi,3:1002]
+                                 phi_boundaries[2]< collected_data$Phi,3:ncol(collected_data)]
       
       # take a sample of the rows
       min_rows = min(c(nrow(panel_1),nrow(panel_2),nrow(panel_3),nrow(panel_4),nrow(panel_5),
@@ -166,50 +168,52 @@ if(plot_histograms){
                         ', '~.(round(phi_boundaries[2],5))~'<'~phi)
       
       # ggplot 
+      bin_number = 30
+      x_limits = c(2,10)
       
-      p1 = ggplot(data.frame(x=panel_1), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
+      p1 = ggplot(data.frame(x=panel_1), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..),bins = bin_number)+
         stat_function(fun = dnorm, args = list(mean = 6, sd = 1), lwd = 1, col = cols[1])+ xlab('')+ ylab('')+
-          labs(title=title1)+ theme(plot.title = element_text(size=8))+ylim(0,max_density)+xlim(4,8)
-      p2 = ggplot(data.frame(x=panel_2), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
+          labs(title=title1)+ theme(plot.title = element_text(size=8))+ylim(0,max_density)+xlim(x_limits[1],x_limits[2])
+      p2 = ggplot(data.frame(x=panel_2), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..),bins = bin_number)+
         stat_function(fun = dnorm, args = list(mean = 6, sd = 1), lwd = 1, col = cols[1])+ xlab('')+ ylab('')+
-        labs(title=title2)+ theme(plot.title = element_text(size=8))+ylim(0,max_density)+xlim(4,8)
-      p3 = ggplot(data.frame(x=panel_3), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
+        labs(title=title2)+ theme(plot.title = element_text(size=8))+ylim(0,max_density)+xlim(x_limits[1],x_limits[2])
+      p3 = ggplot(data.frame(x=panel_3), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..),bins = bin_number)+
         stat_function(fun = dnorm, args = list(mean = 6, sd = 1), lwd = 1, 
                       col = cols[1])+ xlab('')+ ylab('')+labs(title=title3)+ theme(plot.title = element_text(size=8))+
-        ylim(0,max_density)+xlim(4,8)
-      p4 = ggplot(data.frame(x=panel_4), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
+        ylim(0,max_density)+xlim(x_limits[1],x_limits[2])
+      p4 = ggplot(data.frame(x=panel_4), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..),bins = bin_number)+
         stat_function(fun = dnorm, args = list(mean = 6, sd = 1), lwd = 1, 
                       col = cols[1])+ xlab('')+ ylab('')+labs(title=title4)+ theme(plot.title = element_text(size=8))+
-        ylim(0,max_density)+xlim(4,8)
-      p5 = ggplot(data.frame(x=panel_5), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
+        ylim(0,max_density)+xlim(x_limits[1],x_limits[2])
+      p5 = ggplot(data.frame(x=panel_5), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..),bins = bin_number)+
         stat_function(fun = dnorm, args = list(mean = 6, sd = 1), lwd = 1, 
                       col = cols[1])+ xlab('')+ ylab('')+labs(title=title5)+ theme(plot.title = element_text(size=8))+
-        ylim(0,max_density)+xlim(4,8)
-      p6 = ggplot(data.frame(x=panel_6), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
+        ylim(0,max_density)+xlim(x_limits[1],x_limits[2])
+      p6 = ggplot(data.frame(x=panel_6), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..),bins = bin_number)+
         stat_function(fun = dnorm, args = list(mean = 6, sd = 1), lwd = 1, 
                       col = cols[1])+ xlab('')+ ylab('')+labs(title=title6)+ theme(plot.title = element_text(size=8))+
-        ylim(0,max_density)+xlim(4,8)
-      p7 = ggplot(data.frame(x=panel_7), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
+        ylim(0,max_density)+xlim(x_limits[1],x_limits[2])
+      p7 = ggplot(data.frame(x=panel_7), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..),bins = bin_number)+
         stat_function(fun = dnorm, args = list(mean = 6, sd = 1), lwd = 1, 
                       col = cols[1])+ xlab('')+ ylab('')+labs(title=title7)+ theme(plot.title = element_text(size=8))+
-        ylim(0,max_density)+xlim(4,8)
-      p8 = ggplot(data.frame(x=panel_8), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
+        ylim(0,max_density)+xlim(x_limits[1],x_limits[2])
+      p8 = ggplot(data.frame(x=panel_8), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..),bins = bin_number)+
         stat_function(fun = dnorm, args = list(mean = 6, sd = 1), lwd = 1, 
                       col = cols[1])+ xlab('')+ ylab('')+labs(title=title8)+ theme(plot.title = element_text(size=8))+
-        ylim(0,max_density)+xlim(4,8)
-      p9 = ggplot(data.frame(x=panel_9), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..))+
+        ylim(0,max_density)+xlim(x_limits[1],x_limits[2])
+      p9 = ggplot(data.frame(x=panel_9), aes(x)) + geom_histogram(fill = cols[2],aes(y = ..density..),bins = bin_number)+
         stat_function(fun = dnorm, args = list(mean = 6, sd = 1), lwd = 1, 
                       col = cols[1])+ xlab('')+ ylab('')+labs(title=title9)+ theme(plot.title = element_text(size=8))+
-        ylim(0,max_density)+xlim(4,8)
+        ylim(0,max_density)+xlim(x_limits[1],x_limits[2])
       
       multiplot(p1, p2, p3, p4, p5, p6, p7, p8,p9, cols=3)
       print(paste('Sample size:',sample_size))
 }
 
-# plot shapiro surface
+collected_data[,3:ncol(collected_data)] = collected_data[,3:ncol(collected_data)] - 6 # de-mean
 
+# plot shapiro surface
 normal_data = collected_data[,3:ncol(collected_data)]
-normal_data = normal_data - 6 # de-mean
 
 row_var = function(row){
   return(var(as.numeric(normal_data[row,])))
@@ -232,6 +236,105 @@ pull_shapiro2=function(data_set,row){
 shapiro_stats = sapply(1:nrow(normal_data),pull_shapiro, data_set = normal_data)
 
 shapiro_data = data.frame(x = phi_gamma_data$Gamma, y = phi_gamma_data$Phi,z = shapiro_stats)
+
+
+if(plot_QQs){ 
+  
+  entries_per_group = 1
+  
+  panel_1 = collected_data[collected_data$Gamma<= gamma_boundaries[1] & 
+                             collected_data$Phi == phi_boundaries[1],3:ncol(collected_data)]
+  
+  panel_2 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
+                             collected_data$Gamma <= gamma_boundaries[2] &
+                             collected_data$Phi == phi_boundaries[1],3:ncol(collected_data)]
+  
+  panel_3 = collected_data[gamma_boundaries[2] < collected_data$Gamma & 
+                             collected_data$Phi == phi_boundaries[1],3:ncol(collected_data)]
+  
+  panel_4 = collected_data[collected_data$Gamma <= gamma_boundaries[1] & 
+                             phi_boundaries[1] < collected_data$Phi &
+                             collected_data$Phi <= phi_boundaries[2],3:ncol(collected_data)]
+  
+  panel_5 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
+                             collected_data$Gamma <= gamma_boundaries[2] &
+                             phi_boundaries[1] < collected_data$Phi &
+                             collected_data$Phi <= phi_boundaries[2],3:ncol(collected_data)]
+  
+  panel_6 = collected_data[gamma_boundaries[2] < collected_data$Gamma & 
+                             phi_boundaries[1] < collected_data$Phi &
+                             collected_data$Phi <= phi_boundaries[2],3:ncol(collected_data)]
+  
+  panel_7 = collected_data[collected_data$Gamma <= gamma_boundaries[1] & 
+                             phi_boundaries[2]< collected_data$Phi,3:ncol(collected_data)]
+  
+  panel_8 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
+                             collected_data$Gamma <= gamma_boundaries[2] &
+                             phi_boundaries[2]< collected_data$Phi,3:ncol(collected_data)]
+  
+  panel_9 = collected_data[gamma_boundaries[2] < collected_data$Gamma &  
+                             phi_boundaries[2]< collected_data$Phi,3:ncol(collected_data)]
+  
+  # take a sample of the rows
+  min_rows = min(c(nrow(panel_1),nrow(panel_2),nrow(panel_3),nrow(panel_4),nrow(panel_5),
+                   nrow(panel_6),nrow(panel_7),nrow(panel_8),nrow(panel_9)))
+  
+  sample_size = min(entries_per_group,min_rows)
+  
+  panel_1 = panel_1[sample(1:nrow(panel_1),size = sample_size,replace = F),]
+  panel_2 = panel_2[sample(1:nrow(panel_2),size = sample_size,replace = F),]
+  panel_3 = panel_3[sample(1:nrow(panel_3),size = sample_size,replace = F),]
+  panel_4 = panel_4[sample(1:nrow(panel_4),size = sample_size,replace = F),]
+  panel_5 = panel_5[sample(1:nrow(panel_5),size = sample_size,replace = F),]
+  panel_6 = panel_6[sample(1:nrow(panel_6),size = sample_size,replace = F),]
+  panel_7 = panel_7[sample(1:nrow(panel_7),size = sample_size,replace = F),]
+  panel_8 = panel_8[sample(1:nrow(panel_8),size = sample_size,replace = F),]
+  panel_9 = panel_9[sample(1:nrow(panel_9),size = sample_size,replace = F),]
+  
+  # chart titles
+  
+  title1 = bquote(gamma~ '<' ~.(round(gamma_boundaries[1],5))~', '~phi~'='~.(round(phi_boundaries[1],5)))
+  
+  title2 = bquote(.(round(gamma_boundaries[1],5))~'<'~gamma~'<'~.(round(gamma_boundaries[2],5))~', '
+                  ~phi~'='~.(round(phi_boundaries[1],5)))
+  
+  title3 = bquote(.(round(gamma_boundaries[2],5))~'<'~gamma~', '~phi~'='~
+                    .(round(phi_boundaries[1],5)))
+  
+  title4 = bquote(gamma~'<'~.(round(gamma_boundaries[1],5))~', '~.(round(phi_boundaries[1],5))~'<'
+                  ~phi~'<'~.(round(phi_boundaries[2],5)))
+  
+  title5 = bquote(.(round(gamma_boundaries[1],5))~'<'~gamma~'<'~.(round(gamma_boundaries[2],5))~', '~
+                    .(round(phi_boundaries[1],5))~'<'~phi~'<'~.(round(phi_boundaries[2],5)))
+  
+  title6 = bquote(.(round(gamma_boundaries[2],5))~'<'~gamma~', '~
+                    .(round(phi_boundaries[1],5))~'<'~phi~'<'~.(round(phi_boundaries[2],5)))
+  
+  title7 = bquote(gamma~'<'~.(round(gamma_boundaries[1],5))~', '~.(round(phi_boundaries[2],5))~'<'~phi)
+  
+  title8 = bquote(.(round(gamma_boundaries[1],5))~'<'~gamma~'<'~.(round(gamma_boundaries[2],5))~
+                    ', '~.(round(phi_boundaries[2],5))~'<'~phi)
+  
+  title9 = bquote(.(round(gamma_boundaries[2],5))~'<'~gamma~
+                    ', '~.(round(phi_boundaries[2],5))~'<'~phi)
+  
+  # ggplot 
+  
+  p1 = qqplot_by_row2(panel_1,title1,xlab = '',ylab = '')
+  p2 = qqplot_by_row2(panel_2,title2,xlab = '',ylab = '')
+  p3 = qqplot_by_row2(panel_3,title3,xlab = '',ylab = '')
+  p4 = qqplot_by_row2(panel_4,title4,xlab = '',ylab = '')
+  p5 = qqplot_by_row2(panel_5,title5,xlab = '',ylab = '')
+  p6 = qqplot_by_row2(panel_6,title6,xlab = '',ylab = '')
+  p7 = qqplot_by_row2(panel_7,title7,xlab = '',ylab = '')
+  p8 = qqplot_by_row2(panel_8,title8,xlab = '',ylab = '')
+  p9 = qqplot_by_row2(panel_9,title9,xlab = '',ylab = '')
+  
+  multiplot_QQ(p1, p2, p3, p4, p5, p6, p7, p8,p9, cols=3)
+  print(paste('Sample size:',sample_size))
+}
+
+
 
 if(loess_plot){
   
