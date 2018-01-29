@@ -95,10 +95,14 @@ train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, va
 # train_g = tf.train.MomentumOptimizer(learning_rate_g,0.9).minimize(loss_g, var_list=g_parameters)
 # train_d = tf.train.MomentumOptimizer(learning_rate_d,0.9).minimize(loss_d, var_list=d_parameters)
 
+
 data_directory = '/Users/Billy/PycharmProjects/GALR/data2/gd'
 os.chdir(data_directory)
 
 start_time = time.time()
+
+print data_directory
+print train_g
 
 for it in range(1,number_of_trails+1):
     # sample parameters
