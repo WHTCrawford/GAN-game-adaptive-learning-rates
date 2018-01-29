@@ -387,67 +387,79 @@ if(plot_best_histogram){
   
   collected_data[,3:ncol(collected_data)] = collected_data[,3:ncol(collected_data)] + 6
   
+  # mean_close
+  rmeans = rowMeans(collected_data[,3:ncol(collected_data)])
+  accuracy_required = 0.5
+  collected_data_1 = collected_data[6-accuracy_required<=rmeans &rmeans <=6+accuracy_required,]
+  shapiro_data_1 = shapiro_data[6-accuracy_required<=rmeans &rmeans <=6+accuracy_required,]
+  
+  
+  
   entries_per_group = 3
   
-  panel_1 = collected_data[collected_data$Gamma<= gamma_boundaries[1] & 
-                             collected_data$Phi == phi_boundaries[1],3:ncol(collected_data)]
   
-  panel_2 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
-                             collected_data$Gamma <= gamma_boundaries[2] &
-                             collected_data$Phi == phi_boundaries[1],3:ncol(collected_data)]
+  panel_1 = collected_data_1[collected_data_1$Gamma<= gamma_boundaries[1] & 
+                               collected_data_1$Phi == phi_boundaries[1],3:ncol(collected_data_1)]
   
-  panel_3 = collected_data[gamma_boundaries[2] < collected_data$Gamma & 
-                             collected_data$Phi == phi_boundaries[1],3:ncol(collected_data)]
+  panel_2 = collected_data_1[gamma_boundaries[1]< collected_data_1$Gamma &  
+                               collected_data_1$Gamma <= gamma_boundaries[2] &
+                               collected_data_1$Phi == phi_boundaries[1],3:ncol(collected_data_1)]
   
-  panel_4 = collected_data[collected_data$Gamma <= gamma_boundaries[1] & 
-                             phi_boundaries[1] < collected_data$Phi &
-                             collected_data$Phi <= phi_boundaries[2],3:ncol(collected_data)]
+  panel_3 = collected_data_1[gamma_boundaries[2] < collected_data_1$Gamma & 
+                               collected_data_1$Phi == phi_boundaries[1],3:ncol(collected_data_1)]
   
-  panel_5 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
-                             collected_data$Gamma <= gamma_boundaries[2] &
-                             phi_boundaries[1] < collected_data$Phi &
-                             collected_data$Phi <= phi_boundaries[2],3:ncol(collected_data)]
+  panel_4 = collected_data_1[collected_data_1$Gamma <= gamma_boundaries[1] & 
+                               phi_boundaries[1] < collected_data_1$Phi &
+                               collected_data_1$Phi <= phi_boundaries[2],3:ncol(collected_data_1)]
   
-  panel_6 = collected_data[gamma_boundaries[2] < collected_data$Gamma & 
-                             phi_boundaries[1] < collected_data$Phi &
-                             collected_data$Phi <= phi_boundaries[2],3:ncol(collected_data)]
+  panel_5 = collected_data_1[gamma_boundaries[1]< collected_data_1$Gamma &  
+                               collected_data_1$Gamma <= gamma_boundaries[2] &
+                               phi_boundaries[1] < collected_data_1$Phi &
+                               collected_data_1$Phi <= phi_boundaries[2],3:ncol(collected_data_1)]
   
-  panel_7 = collected_data[collected_data$Gamma <= gamma_boundaries[1] & 
-                             phi_boundaries[2]< collected_data$Phi,3:ncol(collected_data)]
+  panel_6 = collected_data_1[gamma_boundaries[2] < collected_data_1$Gamma & 
+                               phi_boundaries[1] < collected_data_1$Phi &
+                               collected_data_1$Phi <= phi_boundaries[2],3:ncol(collected_data_1)]
   
-  panel_8 = collected_data[gamma_boundaries[1]< collected_data$Gamma &  
-                             collected_data$Gamma <= gamma_boundaries[2] &
-                             phi_boundaries[2]< collected_data$Phi,3:ncol(collected_data)]
+  panel_7 = collected_data_1[collected_data_1$Gamma <= gamma_boundaries[1] & 
+                               phi_boundaries[2]< collected_data_1$Phi,3:ncol(collected_data_1)]
   
-  panel_9 = collected_data[gamma_boundaries[2] < collected_data$Gamma &  
-                             phi_boundaries[2]< collected_data$Phi,3:ncol(collected_data)]
+  panel_8 = collected_data_1[gamma_boundaries[1]< collected_data_1$Gamma &  
+                               collected_data_1$Gamma <= gamma_boundaries[2] &
+                               phi_boundaries[2]< collected_data_1$Phi,3:ncol(collected_data_1)]
+  
+  panel_9 = collected_data_1[gamma_boundaries[2] < collected_data_1$Gamma &  
+                               phi_boundaries[2]< collected_data_1$Phi,3:ncol(collected_data_1)]
+  
+  
   
   # take the best shapiros
-  shapiro_1 = shapiro_data[collected_data$Gamma<= gamma_boundaries[1] & 
-                             collected_data$Phi == phi_boundaries[1],]
-  shapiro_2 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
-                             collected_data$Gamma <= gamma_boundaries[2] &
-                             collected_data$Phi == phi_boundaries[1],]
-  shapiro_3 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma & 
-                             collected_data$Phi == phi_boundaries[1],]
-  shapiro_4 = shapiro_data[collected_data$Gamma <= gamma_boundaries[1] & 
-                             phi_boundaries[1] < collected_data$Phi &
-                             collected_data$Phi <= phi_boundaries[2],]
-  shapiro_5 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
-                             collected_data$Gamma <= gamma_boundaries[2] &
-                             phi_boundaries[1] < collected_data$Phi &
-                             collected_data$Phi <= phi_boundaries[2],]
-  shapiro_6 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma & 
-                             phi_boundaries[1] < collected_data$Phi &
-                             collected_data$Phi <= phi_boundaries[2],]
-  shapiro_7 = shapiro_data[collected_data$Gamma <= gamma_boundaries[1] & 
-                             phi_boundaries[2]< collected_data$Phi,]
-  shapiro_8 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
-                             collected_data$Gamma <= gamma_boundaries[2] &
-                             phi_boundaries[2]< collected_data$Phi,]
-  shapiro_9 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma &  
-                             phi_boundaries[2]< collected_data$Phi,]
+  shapiro_1 = shapiro_data_1[collected_data_1$Gamma<= gamma_boundaries[1] & 
+                               collected_data_1$Phi == phi_boundaries[1],]
+  shapiro_2 = shapiro_data_1[gamma_boundaries[1]< collected_data_1$Gamma &  
+                               collected_data_1$Gamma <= gamma_boundaries[2] &
+                               collected_data_1$Phi == phi_boundaries[1],]
+  shapiro_3 = shapiro_data_1[gamma_boundaries[2] < collected_data_1$Gamma & 
+                               collected_data_1$Phi == phi_boundaries[1],]
+  shapiro_4 = shapiro_data_1[collected_data_1$Gamma <= gamma_boundaries[1] & 
+                               phi_boundaries[1] < collected_data_1$Phi &
+                               collected_data_1$Phi <= phi_boundaries[2],]
+  shapiro_5 = shapiro_data_1[gamma_boundaries[1]< collected_data_1$Gamma &  
+                               collected_data_1$Gamma <= gamma_boundaries[2] &
+                               phi_boundaries[1] < collected_data_1$Phi &
+                               collected_data_1$Phi <= phi_boundaries[2],]
+  shapiro_6 = shapiro_data_1[gamma_boundaries[2] < collected_data_1$Gamma & 
+                               phi_boundaries[1] < collected_data_1$Phi &
+                               collected_data_1$Phi <= phi_boundaries[2],]
+  shapiro_7 = shapiro_data_1[collected_data_1$Gamma <= gamma_boundaries[1] & 
+                               phi_boundaries[2]< collected_data_1$Phi,]
+  shapiro_8 = shapiro_data_1[gamma_boundaries[1]< collected_data_1$Gamma &  
+                               collected_data_1$Gamma <= gamma_boundaries[2] &
+                               phi_boundaries[2]< collected_data_1$Phi,]
+  shapiro_9 = shapiro_data_1[gamma_boundaries[2] < collected_data_1$Gamma &  
+                               phi_boundaries[2]< collected_data_1$Phi,]
   
+
   
   panel_1 = data.frame(x = melt(panel_1[order(as.numeric(shapiro_1$z), decreasing = T)[1:entries_per_group],])[,2])
   panel_2 = data.frame(x = melt(panel_2[order(as.numeric(shapiro_2$z), decreasing = T)[1:entries_per_group],])[,2])
