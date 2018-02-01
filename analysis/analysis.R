@@ -11,7 +11,7 @@ source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
 source('/Users/Billy/PycharmProjects/GALR/GAN-game-adaptive-learning-rates/analysis/gg_QQ_plot.R')
 
 # Which plots to show ################################################## 
-phi_against_gamma = F
+phi_against_gamma = T
 plot_histograms = F
 plot_QQs = T
 plot_best_histogram = T
@@ -70,12 +70,6 @@ phi_boundaries = c(min(collected_data$Phi),
                    min(collected_data$Phi)+
                      (max(collected_data$Phi)-min(collected_data$Phi))/2)
 
-# filter out far means
-
-rmeans = rowMeans(collected_data[,3:ncol(collected_data)])
-accuracy_required = 0.5
-collected_data = collected_data[6-accuracy_required<=rmeans &rmeans <=6+accuracy_required,]
-nrow(collected_data)
 
 # Samples plot  ################################################## 
 
@@ -88,20 +82,41 @@ if(phi_against_gamma){
         geom_vline(xintercept = gamma_boundaries[2], col=cols[2], lty = 2, lwd = 3)+
         xlab(bquote(gamma))+ylab(bquote(phi))+theme_jose
   print(p1)
-  jpeg('/Users/Billy/Documents/Uni/cam/GAN/essay tex/samples.jpeg', units="in", width=16, height=12, res=300)
+  jpeg(paste('/Users/Billy/Documents/Uni/cam/GAN/essay tex/',paste(sub_folder,'samples.jpeg',sep = ''),sep = '')
+       , units="in", width=16, height=12, res=300)
   print(p1)
   dev.off()
 }
 
-# Histograms ################################################## 
+# filter out far means and sd--------
+
+old_data = collected_data
+
+rmeans = rowMeans(collected_data[,3:ncol(collected_data)])
+accuracy_required = 0.5
+collected_data = collected_data[6-accuracy_required<=rmeans & rmeans <=6+accuracy_required,]
+nrow(collected_data)
 
 
+accuracy_required = 0.2
+sds = apply(collected_data[,3:ncol(collected_data)], 1, sd)
+collected_data = collected_data[(1-accuracy_required<=sds & sds <=1+accuracy_required),]
 
+
+(sum(collected_data$Phi == phi_boundaries[1]) - sum(old_data$Phi == phi_boundaries[1]))/sum(old_data$Phi == phi_boundaries[1])
+(sum(phi_boundaries[1] < collected_data$Phi &
+       collected_data$Phi <= phi_boundaries[2]) - sum(phi_boundaries[1] < old_data$Phi &
+                                                        old_data$Phi <= phi_boundaries[2]))/sum(phi_boundaries[1] < old_data$Phi &
+        old_data$Phi <= phi_boundaries[2])
+(sum(phi_boundaries[2] < collected_data$Phi) - sum( old_data$Phi > phi_boundaries[2]))/sum( old_data$Phi > phi_boundaries[2])
+
+
+# Plot histograms --------
 if(plot_histograms){
   
-      bin_number = 30
+      bin_number = 40
       
-      entries_per_group = 3
+      entries_per_group = 1
       
       panel_1 = collected_data[collected_data$Gamma<= gamma_boundaries[1] & 
                                  collected_data$Phi == phi_boundaries[1],3:ncol(collected_data)]
@@ -297,29 +312,29 @@ if(plot_QQs){
  
   
   # take the best shapiros
-  shapiro_1 = shapiro_data_1[collected_data$Gamma<= gamma_boundaries[1] & 
+  shapiro_1 = shapiro_data[collected_data$Gamma<= gamma_boundaries[1] & 
                              collected_data$Phi == phi_boundaries[1],]
-  shapiro_2 = shapiro_data_1[gamma_boundaries[1]< collected_data$Gamma &  
+  shapiro_2 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
                              collected_data$Gamma <= gamma_boundaries[2] &
                              collected_data$Phi == phi_boundaries[1],]
-  shapiro_3 = shapiro_data_1[gamma_boundaries[2] < collected_data$Gamma & 
+  shapiro_3 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma & 
                              collected_data$Phi == phi_boundaries[1],]
-  shapiro_4 = shapiro_data_1[collected_data$Gamma <= gamma_boundaries[1] & 
+  shapiro_4 = shapiro_data[collected_data$Gamma <= gamma_boundaries[1] & 
                              phi_boundaries[1] < collected_data$Phi &
                              collected_data$Phi <= phi_boundaries[2],]
-  shapiro_5 = shapiro_data_1[gamma_boundaries[1]< collected_data$Gamma &  
+  shapiro_5 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
                              collected_data$Gamma <= gamma_boundaries[2] &
                              phi_boundaries[1] < collected_data$Phi &
                              collected_data$Phi <= phi_boundaries[2],]
-  shapiro_6 = shapiro_data_1[gamma_boundaries[2] < collected_data$Gamma & 
+  shapiro_6 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma & 
                              phi_boundaries[1] < collected_data$Phi &
                              collected_data$Phi <= phi_boundaries[2],]
-  shapiro_7 = shapiro_data_1[collected_data$Gamma <= gamma_boundaries[1] & 
+  shapiro_7 = shapiro_data[collected_data$Gamma <= gamma_boundaries[1] & 
                              phi_boundaries[2]< collected_data$Phi,]
-  shapiro_8 = shapiro_data_1[gamma_boundaries[1]< collected_data$Gamma &  
+  shapiro_8 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
                              collected_data$Gamma <= gamma_boundaries[2] &
                              phi_boundaries[2]< collected_data$Phi,]
-  shapiro_9 = shapiro_data_1[gamma_boundaries[2] < collected_data$Gamma &  
+  shapiro_9 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma &  
                              phi_boundaries[2]< collected_data$Phi,]
   
   
@@ -371,7 +386,8 @@ if(plot_QQs){
   p7 = qqplot_by_row2(panel_9,title9,xlab = '',ylab = '')
   p8 = qqplot_by_row2(panel_8,title8,xlab = '',ylab = '')
   p9 = qqplot_by_row2(panel_7,title7,xlab = '',ylab = '')
-  jpeg('/Users/Billy/Documents/Uni/cam/GAN/essay tex/QQ.jpeg', units="in", width=16, height=12, res=300)
+  jpeg(paste('/Users/Billy/Documents/Uni/cam/GAN/essay tex/',paste(sub_folder,'QQ.jpeg',sep = ''),sep = '')
+             , units="in", width=16, height=12, res=300)
   multiplot_QQ(p1, p2, p3, p4, p5, p6, p7, p8,p9, cols=3)
   dev.off()
 }
@@ -382,13 +398,13 @@ if(plot_QQs){
 
 
 if(plot_best_histogram){ 
-  bin_number = 30
+  bin_number = 50
   
   collected_data[,3:ncol(collected_data)] = collected_data[,3:ncol(collected_data)] + 6
   
   # mean_close
  
-  entries_per_group = 3
+  entries_per_group = 1
   
   
   panel_1 = collected_data[collected_data$Gamma<= gamma_boundaries[1] & 
@@ -427,29 +443,29 @@ if(plot_best_histogram){
   
   
   # take the best shapiros
-  shapiro_1 = shapiro_data_1[collected_data$Gamma<= gamma_boundaries[1] & 
+  shapiro_1 = shapiro_data[collected_data$Gamma<= gamma_boundaries[1] & 
                                collected_data$Phi == phi_boundaries[1],]
-  shapiro_2 = shapiro_data_1[gamma_boundaries[1]< collected_data$Gamma &  
+  shapiro_2 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
                                collected_data$Gamma <= gamma_boundaries[2] &
                                collected_data$Phi == phi_boundaries[1],]
-  shapiro_3 = shapiro_data_1[gamma_boundaries[2] < collected_data$Gamma & 
+  shapiro_3 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma & 
                                collected_data$Phi == phi_boundaries[1],]
-  shapiro_4 = shapiro_data_1[collected_data$Gamma <= gamma_boundaries[1] & 
+  shapiro_4 = shapiro_data[collected_data$Gamma <= gamma_boundaries[1] & 
                                phi_boundaries[1] < collected_data$Phi &
                                collected_data$Phi <= phi_boundaries[2],]
-  shapiro_5 = shapiro_data_1[gamma_boundaries[1]< collected_data$Gamma &  
+  shapiro_5 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
                                collected_data$Gamma <= gamma_boundaries[2] &
                                phi_boundaries[1] < collected_data$Phi &
                                collected_data$Phi <= phi_boundaries[2],]
-  shapiro_6 = shapiro_data_1[gamma_boundaries[2] < collected_data$Gamma & 
+  shapiro_6 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma & 
                                phi_boundaries[1] < collected_data$Phi &
                                collected_data$Phi <= phi_boundaries[2],]
-  shapiro_7 = shapiro_data_1[collected_data$Gamma <= gamma_boundaries[1] & 
+  shapiro_7 = shapiro_data[collected_data$Gamma <= gamma_boundaries[1] & 
                                phi_boundaries[2]< collected_data$Phi,]
-  shapiro_8 = shapiro_data_1[gamma_boundaries[1]< collected_data$Gamma &  
+  shapiro_8 = shapiro_data[gamma_boundaries[1]< collected_data$Gamma &  
                                collected_data$Gamma <= gamma_boundaries[2] &
                                phi_boundaries[2]< collected_data$Phi,]
-  shapiro_9 = shapiro_data_1[gamma_boundaries[2] < collected_data$Gamma &  
+  shapiro_9 = shapiro_data[gamma_boundaries[2] < collected_data$Gamma &  
                                phi_boundaries[2]< collected_data$Phi,]
   
 
@@ -548,7 +564,7 @@ if(plot_best_histogram){
   
   
   
-  jpeg('/Users/Billy/Documents/Uni/cam/GAN/essay tex/best_histograms.jpeg', units="in", width=16, height=12, res=300)
+  jpeg(paste('/Users/Billy/Documents/Uni/cam/GAN/essay tex/',paste(sub_folder,'best_histograms.jpeg',sep = ''),sep = ''), units="in", width=16, height=12, res=300)
   multiplot(p1, p2, p3, p4, p5, p6, p7, p8,p9, cols=3)
   dev.off()
   collected_data[,3:ncol(collected_data)] = collected_data[,3:ncol(collected_data)] - 6
@@ -623,7 +639,7 @@ if(loess_plot){
               ylab = expression(phi), zlab = list('-Shapiro-Wilk Statistic',rot = 90), col = 'black',
               shade = F,pretty=T)
     print(p1)
-    jpeg('/Users/Billy/Documents/Uni/cam/GAN/essay tex/loess.jpeg', units="in", width=7, height=7, res=300)
+    jpeg(paste('/Users/Billy/Documents/Uni/cam/GAN/essay tex/',paste(sub_folder,'loess.jpeg',sep = ''),sep = ''), units="in", width=7, height=7, res=300)
     trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
     print(p1)
     dev.off()
@@ -800,6 +816,7 @@ if(compare_means){
 }
 
 mean(shapiro_data$z)
+
 
 
 

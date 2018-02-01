@@ -89,6 +89,9 @@ learning_rate_g = gamma + phi_g*(1 + tf.tanh(adjuster*V))
 train_g = tf.train.GradientDescentOptimizer(learning_rate_g).minimize(loss_g, var_list=g_parameters)
 train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, var_list=d_parameters)
 
+# train_g = tf.train.MomentumOptimizer(learning_rate_g,0.2).minimize(loss_g, var_list=g_parameters)
+# train_d = tf.train.MomentumOptimizer(learning_rate_d,0.2).minimize(loss_d, var_list=d_parameters)
+
 # train_g = tf.train.MomentumOptimizer(learning_rate_g,0.6).minimize(loss_g, var_list=g_parameters)
 # train_d = tf.train.MomentumOptimizer(learning_rate_d,0.6).minimize(loss_d, var_list=d_parameters)
 
