@@ -393,7 +393,7 @@ if(plot_QQs){
 }
 
 
-# plot best histogram ----------
+# plot best histograms ----------
 
 
 

@@ -127,7 +127,7 @@ for it in range(1,number_of_trails+1):
             with tf.Session() as sess:
                 tf.global_variables_initializer().run()
                 # writer = tf.summary.FileWriter('./graphs', sess.graph)
-                for step in range(1, number_of_epochs):
+                for step in range(1, number_of_epochs+1):
                     generator_input = np.random.uniform(0, 1, (batch_size, 1))
                     real_dist = np.random.normal(real_mean, real_sd, (batch_size, 1))
 
