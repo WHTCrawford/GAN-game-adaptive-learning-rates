@@ -828,9 +828,10 @@ if(compare_means){
 
 
 ## Create KL_dataset
-full_KL = fread('/Users/Billy/PycharmProjects/GALR/data2/KL_divergence.csv',header = T)
+file_name = paste(c('/Users/Billy/PycharmProjects/GALR/data2/',sub_folder,'_KL_divergence.csv'),collapse = '')
+full_KL = fread(file_name,header = T)
 
-reload_KL = T
+reload_KL = F
 if(reload_KL){
   
   real_dist = rnorm(10000 , 6,1)
@@ -842,11 +843,13 @@ if(reload_KL){
   
   KL_vec = pbapply(old_data[,3:ncol(old_data)],MARGIN = 1,kl_to_real)
   
-  KL_dataframe = data.frame(old_data[,1],old_data[,3],KL_vec )
+  KL_dataframe = data.frame(old_data[,1],old_data[,2],KL_vec )
   
   colnames(KL_dataframe) = c('x','y','z')
   
-  write.csv(x = KL_dataframe, '/Users/Billy/PycharmProjects/GALR/data2/KL_divergence.csv',row.names = F)
+  file_name = paste(c('/Users/Billy/PycharmProjects/GALR/data2/',sub_folder,'_KL_divergence.csv'),collapse = '')
+  
+  write.csv(x = KL_dataframe, file_name,row.names = F)
 }
 
 
