@@ -12,7 +12,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # Structure: in each trial generate parameters, then for number_of_epochs
 # generate a batch of size 'batch_size' each time from the input distribution and the real distribution
 # and train the GAN on it
-number_of_trails = 800
+number_of_trails = 100
 number_of_epochs = 100000
 batch_size = 1000
 hidden_layer_size_d = 6
@@ -155,6 +155,12 @@ for it in range(1,number_of_trails+1):
                 # sns.distplot(generated, hist=False, rug=False)
                 # sns.distplot(real_dist, hist=False, rug=False)
                 # plt.show()
+            
+            if row % 4 == 0 and row != 0: 
+            	print 'Cooling, 2 mins remaining'
+                time.sleep(60)
+                print 'Cooling, 1 mins remaining'
+                time.sleep(60)
 
     res_dataframe = pd.DataFrame(data=res_matrix.astype(float))
     gamma_dataframe = pd.DataFrame(data=gamma_out_vec.astype(float))
@@ -165,6 +171,7 @@ for it in range(1,number_of_trails+1):
 
     with open("output.csv", 'a') as f:
         output_dataframe2.to_csv(f, sep=',', header=False, float_format='%.9f', index=False)
+    
 
 
 print 'Total time taken: {0} seconds'.format(time.time()- start_time)

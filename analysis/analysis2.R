@@ -13,10 +13,12 @@ source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
 
 
 # Which plots to show ################################################## 
-phi_against_gamma = F
+phi_against_gamma = T
 loess_plot_KL = F
-plot_best_histogram_KL = F
+plot_best_histogram_KL = T
 qqplot = T
+plot_med_histogram_KL = F
+qqplot_median = F
 
 recalc_KL = T
 
@@ -24,7 +26,7 @@ recalc_KL = T
 sub_folder = 'gd'
 
 save_picture_name = function(name){
-  dir = paste(c('/Users/Billy/Documents/Uni/cam/GAN/essay tex/',sub_folder,'_',name,'_new.jpeg'),
+  dir = paste(c('/Users/Billy/Documents/Uni/cam/GAN/essay tex/',sub_folder,'_',name,'.jpeg'),
               collapse = '')
   return(dir)
 }
@@ -39,6 +41,13 @@ gg_color_hue <- function(n) {
 
 cols = gg_color_hue(2)
 
+export_theme = theme(text=element_text(size=20),
+                     axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
+                     axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)))
+
+rstudio_theme = theme(text=element_text(size=8),
+                      axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
+                      axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)))
 
 # Collect data ################################################## 
 
@@ -77,7 +86,7 @@ if(phi_against_gamma){
     geom_hline(yintercept = phi_boundaries[2], col=cols[2], lty = 2, lwd = 3)+
     geom_vline(xintercept = gamma_boundaries[1], col=cols[2], lty = 2, lwd = 3) +
     geom_vline(xintercept = gamma_boundaries[2], col=cols[2], lty = 2, lwd = 3)+
-    xlab(bquote(gamma))+ylab(bquote(phi))+theme_jose
+    xlab(bquote(gamma))+ylab(bquote(phi))+export_theme
   print(p1)
   jpeg(save_picture_name('samples'), units="in", width=16, height=12, res=300)
   print(p1)
@@ -95,17 +104,24 @@ if(recalc_KL){
     return(KL.divergence(real_dist,vec_1,k=10)[10])
   }
   
+  kl_from_real = function(vec){
+    vec_1 = as.numeric(vec)
+    return(KL.divergence(vec_1,real_dist,k=10)[10])
+  }
+  
   KL_vec = pbapply(collected_data[,3:ncol(collected_data)],MARGIN = 1,kl_to_real)
+  
+  KL_vec2 = pbapply(collected_data[,3:ncol(collected_data)],MARGIN = 1,kl_from_real)
   
   KL_dataframe <<- data.frame(Gamma = collected_data[,1],
                               Phi = collected_data[,2],
-                              KL = KL_vec )
+                              KL_real_gen = KL_vec,
+                              KL_gen_real = KL_vec2)
   
   write.csv(x = KL_dataframe, 'KL_divergence.csv',row.names = F)
 } else{
   KL_dataframe <<- fread('KL_divergence.csv',header = T)
 }
-
 
 # LOESS KL plot ------
 
@@ -241,14 +257,6 @@ titles = list(bquote(gamma~ '<' ~.(round(gamma_boundaries[1],5))~', '
 
 # Best Histogram ----
 
-export_theme = theme(text=element_text(size=20),
-                     axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
-                     axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)))
-
-rstudio_theme = theme(text=element_text(size=8),
-                      axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
-                      axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)))
-
 
 plot_individual_hist = function(vec, title = '', max_density = 0.5, theme_choice){
   p = ggplot(data.frame(x=vec), aes(x)) + 
@@ -284,7 +292,7 @@ if(plot_best_histogram_KL){
   # multiplot(q1, q2, q3, q4, q5, q6, q7, q8,q9, cols=3)
 }
 
-# QQ plot -------
+# Best QQ plot -------
 
 vec = 1:10
 quantile(vec,probs = 1:100/100)
@@ -323,6 +331,73 @@ if(qqplot){
   
   
   jpeg(save_picture_name('QQplot'), units="in", width=16, height=12, res=300)
+  multiplot_QQ(p1, p2, p3, p4, p5, p6, p7, p8,p9, cols=3)
+  dev.off()
+  # multiplot_QQ(q1, q2, q3, q4, q5, q6, q7, q8,q9, cols=3)
+}
+
+# Median Histogram ----
+
+which.median = function(x) {
+  if (length(x) %% 2 != 0) {
+    which(x == median(x))
+  } else if (length(x) %% 2 == 0) {
+    a = sort(x)[c(length(x)/2, length(x)/2+1)]
+    which(x == a[1])
+  }
+}
+
+median_of_third_col = function(df){
+  return(which.median(df[,3]))
+}
+
+median_row_indexes = lapply(KL_split,median_of_third_col)
+
+if(plot_med_histogram_KL){ 
+  
+  med_hist_data = list()
+  for(i in 1:9){
+    med_hist_data[[i]] = as.numeric(collected_split[[i]][median_row_indexes[[i]],3:ncol(collected_split[[i]])])
+  }
+  
+  for(i in 1:9){
+    name = paste('p',i,sep = '')
+    assign(name,plot_individual_hist(med_hist_data[[i]], titles[[i]],theme_choice = export_theme))
+  }
+  
+  for(i in 1:9){
+    name = paste('q',i,sep = '')
+    assign(name,plot_individual_hist(med_hist_data[[i]], titles[[i]],theme_choice = rstudio_theme))
+  }
+  
+  jpeg(save_picture_name('med_histograms_KL'), units="in", width=16, height=12, res=300)
+  multiplot(p1, p2, p3, p4, p5, p6, p7, p8,p9, cols=3)
+  dev.off()
+  # multiplot(q1, q2, q3, q4, q5, q6, q7, q8,q9, cols=3)
+}
+
+# Median QQ plot -------
+
+
+if(qqplot_median){ 
+  
+  med_qq_data = list()
+  for(i in 1:9){
+    med_qq_data[[i]] = as.numeric(standardized_split[[i]][median_row_indexes[[i]],3:ncol(standardized_split[[i]])])
+  }
+  
+  for(i in 1:9){
+    name = paste('p',i,sep = '')
+    assign(name,qqplot_individual(med_qq_data[[i]], titles[[i]],xlab ='',ylab = '',theme_choice = export_theme))
+  }
+  
+  for(i in 1:9){
+    name = paste('q',i,sep = '')
+    assign(name,qqplot_individual(med_qq_data[[i]], titles[[i]],xlab ='',ylab = '',theme_choice = rstudio_theme))
+  }
+  
+  
+  jpeg(save_picture_name('QQplot_med'), units="in", width=16, height=12, res=300)
   multiplot_QQ(p1, p2, p3, p4, p5, p6, p7, p8,p9, cols=3)
   dev.off()
   # multiplot_QQ(q1, q2, q3, q4, q5, q6, q7, q8,q9, cols=3)
