@@ -72,14 +72,15 @@ loss_g = tf.reduce_mean(tf.log(1-d_output_fake))
 # Game Adaptive Learning Rate
 phi_g = tf.placeholder(tf.float32)
 phi_d = tf.placeholder(tf.float32)
-gamma = tf.placeholder(tf.float32)
-adjuster1 = (1/2 * tf.log(phi_d/(2*phi_g + phi_d))) / tf.log(0.25)
-adjuster = tf.maximum(0.0, adjuster1)
+gamma_g = tf.placeholder(tf.float32)
+gamma_d = tf.placeholder(tf.float32)
+psi_1 = tf.log((gamma_d - gamma_g - (2*phi_g) - phi_d)/(-gamma_d+gamma_g-phi_d))/tf.log(16.0)
+psi = tf.maximum(0.0, psi_1)
 
 V = tf.minimum(tf.reduce_mean(tf.log(d_output_real)+tf.log(1-d_output_fake)),0)
 
-learning_rate_d = gamma-phi_d*tf.tanh(adjuster*V)
-learning_rate_g = gamma + phi_g*(1 + tf.tanh(adjuster*V))
+learning_rate_d = gamma_d-phi_d*tf.tanh(psi*V)
+learning_rate_g = gamma_g + phi_g*(1 + tf.tanh(psi*V))
 
 # Train step
 
@@ -132,10 +133,12 @@ for it in range(1,number_of_trails+1):
                     real_dist = np.random.normal(real_mean, real_sd, (batch_size, 1))
 
                     sess.run(train_d, feed_dict={real_dist_placeholder: real_dist,
-                                                 generator_input_placeholder: generator_input, phi_g: p,phi_d:p, gamma:k})
+                                             generator_input_placeholder: generator_input, phi_g: p,phi_d:p, 
+                                             gamma_g:k,gamma_d:k })
                     sess.run(train_g, feed_dict={real_dist_placeholder: real_dist,
-                                                 generator_input_placeholder: generator_input, phi_g: p,phi_d:p,gamma:k})
-
+                                             generator_input_placeholder: generator_input, phi_g: p,phi_d:p, 
+                                             gamma_g:k,gamma_d:k })
+                                             
                 generator_input = np.random.uniform(0, 1, (batch_size, 1))
                 real_dist = np.random.normal(real_mean, real_sd, (batch_size, 1))
 

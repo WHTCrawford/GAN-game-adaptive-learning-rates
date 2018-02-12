@@ -1,7 +1,7 @@
 import os
-os.chdir('/Users/Billy/PycharmProjects/GALR/data/gd/')
-start_file_number = 2
-end_file_number = 438
+os.chdir('/Users/Billy/PycharmProjects/GALR/data4/gd/')
+start_file_number = 1
+end_file_number = 2
 
 
 fout=open("output_merged.csv","w")
