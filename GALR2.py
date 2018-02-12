@@ -56,7 +56,6 @@ bias_g_1 = tf.Variable(tf.random_uniform([hidden_layer_size_g], minval=0, maxval
 weight_g_2 = tf.Variable(tf.random_uniform([hidden_layer_size_g, 1], minval=0, maxval=1, dtype=tf.float32))
 bias_g_2 = tf.Variable(tf.random_uniform([1], minval=0, maxval=1, dtype=tf.float32))
 
-
 g_parameters = [weight_g_1,bias_g_1, weight_g_2, bias_g_2]
 
 
@@ -68,7 +67,7 @@ with tf.variable_scope("Discriminator") as scope:
     scope.reuse_variables()
     d_output_fake = discriminator(generator(generator_input_placeholder, g_parameters), d_parameters)
 loss_d = tf.reduce_mean(-tf.log(d_output_real) - tf.log(1 - d_output_fake))
-loss_g = tf.reduce_mean(-tf.log(d_output_fake))
+loss_g = tf.reduce_mean(tf.log(1-d_output_fake))
 
 # Game Adaptive Learning Rate
 phi_g = tf.placeholder(tf.float32)
@@ -100,7 +99,7 @@ train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, va
 # train_d = tf.train.MomentumOptimizer(learning_rate_d,0.9).minimize(loss_d, var_list=d_parameters)
 
 
-data_directory = '/Users/Billy/PycharmProjects/GALR/data3/gd'
+data_directory = '/Users/Billy/PycharmProjects/GALR/data4/gd'
 os.chdir(data_directory)
 
 start_time = time.time()
@@ -156,9 +155,7 @@ for it in range(1,number_of_trails+1):
                 # sns.distplot(real_dist, hist=False, rug=False)
                 # plt.show()
             
-            if row % 4 == 0 and row != 0: 
-            	print 'Cooling, 2 mins remaining'
-                time.sleep(60)
+            if row % 1 == 0 and row != 0: 
                 print 'Cooling, 1 mins remaining'
                 time.sleep(60)
 

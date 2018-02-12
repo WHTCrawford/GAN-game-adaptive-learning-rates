@@ -14,11 +14,11 @@ source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
 
 # Which plots to show ################################################## 
 phi_against_gamma = T
-loess_plot_KL = F
+loess_plot_KL = T
 plot_best_histogram_KL = T
 qqplot = T
-plot_med_histogram_KL = F
-qqplot_median = F
+plot_med_histogram_KL = T
+qqplot_median = T
 
 recalc_KL = T
 
@@ -26,7 +26,7 @@ recalc_KL = T
 sub_folder = 'gd'
 
 save_picture_name = function(name){
-  dir = paste(c('/Users/Billy/Documents/Uni/cam/GAN/essay tex/',sub_folder,'_',name,'.jpeg'),
+  dir = paste(c('/Users/Billy/Documents/Uni/cam/GAN/essay tex/plots_pictures/',sub_folder,'_',name,'.jpeg'),
               collapse = '')
   return(dir)
 }
@@ -41,6 +41,10 @@ gg_color_hue <- function(n) {
 
 cols = gg_color_hue(2)
 
+export_theme1 = theme(text=element_text(size=40),
+                     axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
+                     axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)))
+
 export_theme = theme(text=element_text(size=20),
                      axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
                      axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)))
@@ -51,7 +55,7 @@ rstudio_theme = theme(text=element_text(size=8),
 
 # Collect data ################################################## 
 
-data_path = paste('/Users/Billy/PycharmProjects/GALR/data3/',sub_folder, sep = '')
+data_path = paste('/Users/Billy/PycharmProjects/GALR/data4/',sub_folder, sep = '')
 setwd(data_path)
 
 collected_data = fread('output.csv', header = F, sep = ',')
@@ -86,7 +90,7 @@ if(phi_against_gamma){
     geom_hline(yintercept = phi_boundaries[2], col=cols[2], lty = 2, lwd = 3)+
     geom_vline(xintercept = gamma_boundaries[1], col=cols[2], lty = 2, lwd = 3) +
     geom_vline(xintercept = gamma_boundaries[2], col=cols[2], lty = 2, lwd = 3)+
-    xlab(bquote(gamma))+ylab(bquote(phi))+export_theme
+    xlab(bquote(gamma))+ylab(bquote(phi))+export_theme1
   print(p1)
   jpeg(save_picture_name('samples'), units="in", width=16, height=12, res=300)
   print(p1)
@@ -151,15 +155,15 @@ if(loess_plot_KL){
   
   size_of_grid = 80
   
-  fit_loess = loess(KL~Gamma*Phi,data =KL_dataframe, span = 0.15)
+  fit_loess = loess(KL_real_gen~Gamma*Phi,data =KL_dataframe, span = 0.15)
   
   g_p_grid = expand.grid(list(Gamma = seq(min(KL_dataframe$Gamma), max(KL_dataframe$Phi),
                                       length.out = size_of_grid), 
                               Phi = seq(min(KL_dataframe$Gamma),  max(KL_dataframe$Phi), 
                                       length.out = size_of_grid)))
-  predicted_shapiro = predict(fit_loess, newdata = g_p_grid)
+  predicted_KL = predict(fit_loess, newdata = g_p_grid)
   
-  new_data = melt(predicted_shapiro)
+  new_data = melt(predicted_KL)
   new_data$Gamma = sapply(new_data$Gamma,function(x) as.numeric(gsub("Gamma=", "", x)))
   new_data$Phi = sapply(new_data$Phi,function(x) as.numeric(gsub("Phi=", "", x)))
   trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
@@ -168,6 +172,28 @@ if(loess_plot_KL){
                 shade = F,pretty=T)
   print(p1)
   jpeg(save_picture_name('loess'), units="in", width=7, height=7, res=300)
+  trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
+  print(p1)
+  dev.off()
+  # other KL divegence
+  
+  fit_loess = loess(KL_gen_real~Gamma*Phi,data =KL_dataframe, span = 0.15)
+  
+  g_p_grid = expand.grid(list(Gamma = seq(min(KL_dataframe$Gamma), max(KL_dataframe$Phi),
+                                          length.out = size_of_grid), 
+                              Phi = seq(min(KL_dataframe$Gamma),  max(KL_dataframe$Phi), 
+                                        length.out = size_of_grid)))
+  predicted_KL = predict(fit_loess, newdata = g_p_grid)
+  
+  new_data = melt(predicted_KL)
+  new_data$Gamma = sapply(new_data$Gamma,function(x) as.numeric(gsub("Gamma=", "", x)))
+  new_data$Phi = sapply(new_data$Phi,function(x) as.numeric(gsub("Phi=", "", x)))
+  trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
+  p1 =wireframe(value ~ Gamma * Phi, data = new_data, xlab = expression(gamma), par.settings = theme.novpadding,
+                ylab = expression(phi), zlab = list('Estimated KL Divergence',rot = 90), col = 'black',
+                shade = F,pretty=T)
+  print(p1)
+  jpeg(save_picture_name('gd_loess_gen_to_real'), units="in", width=7, height=7, res=300)
   trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
   print(p1)
   dev.off()
