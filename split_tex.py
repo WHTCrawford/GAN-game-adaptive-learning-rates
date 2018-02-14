@@ -17,12 +17,10 @@ actual_text = actual_text.replace('\maketitle','')
 actual_text = actual_text.replace('\end{document}','')
 
 
-
-preamble = preamble.replace(r'\makeatletter',r'%\makeatletter')
 preamble = preamble.replace(r'\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth',
                             r'%\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth')
 preamble = preamble.replace(r'\else\Gin@nat@width\fi}',r'%\else\Gin@nat@width\fi}')
-preamble = preamble.replace(r'\makeatother',r'%\makeatother')
+
 preamble = preamble.replace(r'\let\Oldincludegraphics\includegraphics',
                             r'%\let\Oldincludegraphics\includegraphics')
 preamble = preamble.replace(r'\renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}',
@@ -30,6 +28,8 @@ preamble = preamble.replace(r'\renewcommand{\includegraphics}[1]{\Oldincludegrap
 preamble = preamble.replace(r'\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}',
                             r'%\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}')
 preamble = preamble.replace(r'\usepackage{geometry}','\usepackage[margin=1.25in]{geometry}')
+
+preamble = preamble.replace('colorlinks=true','colorlinks=false')
 
 
 galr_preamble = open('/Users/Billy/Documents/Uni/cam/GAN/essay tex/galr_preamble.tex', 'w')

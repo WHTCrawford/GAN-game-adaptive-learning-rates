@@ -329,7 +329,8 @@ output of \(D\) through the standard logistic function to constain it to
 be between 0 and 1. The hyperparameters \textbf{hidden\_layer\_size\_d}
 and \textbf{hidden\_layer\_size\_g} are unsurprisingly the number of
 nodes in the hidden layers of \(D\) and \(G\) respectively. Here we also
-define the weights and the biases which define the networks.
+define the weights and the biases which define the networks, which are
+all initialized to 0.
 
     \begin{Verbatim}[commandchars=\\\{\}]
 {\color{incolor}In [{\color{incolor}4}]:} \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d} \PY{o}{=} \PY{l+m+mi}{6}
@@ -355,30 +356,20 @@ define the weights and the biases which define the networks.
             \PY{n}{output} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{matmul}\PY{p}{(}\PY{n}{activ\PYZus{}1}\PY{p}{,} \PY{n}{parameters}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{n}{parameters}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{p}{)}
             \PY{k}{return} \PY{n}{output}
         
-        \PY{n}{weight\PYZus{}d\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{,} 
-                                        \PY{n}{minval}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
-        \PY{n}{bias\PYZus{}d\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{,} \PY{n}{minval}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} 
-                                                 \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
-        \PY{n}{weight\PYZus{}d\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{,} 
-                    \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{,} \PY{n}{minval}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
-        \PY{n}{bias\PYZus{}d\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{,} \PY{n}{minval}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} 
-                                                 \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
-        \PY{n}{weight\PYZus{}d\PYZus{}3} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} 
-                                        \PY{n}{minval}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
-        \PY{n}{bias\PYZus{}d\PYZus{}3} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{minval}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} 
-                                                 \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
+        \PY{n}{weight\PYZus{}d\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+        \PY{n}{bias\PYZus{}d\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+        \PY{n}{weight\PYZus{}d\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{,} \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+        \PY{n}{bias\PYZus{}d\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+        \PY{n}{weight\PYZus{}d\PYZus{}3} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+        \PY{n}{bias\PYZus{}d\PYZus{}3} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
         
         \PY{n}{d\PYZus{}parameters} \PY{o}{=} \PY{p}{[}\PY{n}{weight\PYZus{}d\PYZus{}1}\PY{p}{,}\PY{n}{bias\PYZus{}d\PYZus{}1}\PY{p}{,} \PY{n}{weight\PYZus{}d\PYZus{}2}\PY{p}{,} \PY{n}{bias\PYZus{}d\PYZus{}2}\PY{p}{,}\PY{n}{weight\PYZus{}d\PYZus{}3}\PY{p}{,} 
                         \PY{n}{bias\PYZus{}d\PYZus{}3}\PY{p}{]}
         
-        \PY{n}{weight\PYZus{}g\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{]}\PY{p}{,} 
-                                        \PY{n}{minval}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
-        \PY{n}{bias\PYZus{}g\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{]}\PY{p}{,} 
-                                        \PY{n}{minval}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
-        \PY{n}{weight\PYZus{}g\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} 
-                                        \PY{n}{minval}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
-        \PY{n}{bias\PYZus{}g\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{minval}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} 
-                                                 \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
+        \PY{n}{weight\PYZus{}g\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+        \PY{n}{bias\PYZus{}g\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+        \PY{n}{weight\PYZus{}g\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+        \PY{n}{bias\PYZus{}g\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
         
         \PY{n}{g\PYZus{}parameters} \PY{o}{=} \PY{p}{[}\PY{n}{weight\PYZus{}g\PYZus{}1}\PY{p}{,}\PY{n}{bias\PYZus{}g\PYZus{}1}\PY{p}{,} \PY{n}{weight\PYZus{}g\PYZus{}2}\PY{p}{,} \PY{n}{bias\PYZus{}g\PYZus{}2}\PY{p}{]}
 \end{Verbatim}
@@ -409,8 +400,8 @@ sample and a fake sample. The losses are as described in Section XYZ.
     We now create the nessescary parameters for game adaptive learning
 rates. Note we make sure the adjustment factor, \textbf{psi}, is less
 than zero and the empirical value function, \textbf{V}, is greater than
-zero to avoid any rounding errors. The formula for the adjustment factor
-, \textbf{psi}, can be found in Section XYZ.
+zero to avoid any rounding errors. The formula for the adjustment
+factor, \textbf{psi}, can be found in Section XYZ.
 
     \begin{Verbatim}[commandchars=\\\{\}]
 {\color{incolor}In [{\color{incolor}6}]:} \PY{n}{phi\PYZus{}g} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{placeholder}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}
@@ -432,7 +423,7 @@ zero to avoid any rounding errors. The formula for the adjustment factor
     We now define the training steps:
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}7}]:} \PY{n}{train\PYZus{}g} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{train}\PY{o}{.}\PY{n}{GradientDescentOptimizer}\PY{p}{(}\PY{n}{learning\PYZus{}rate\PYZus{}g}\PY{p}{)}\PY{o}{.}\PYZbs{}
+{\color{incolor}In [{\color{incolor} }]:} \PY{n}{train\PYZus{}g} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{train}\PY{o}{.}\PY{n}{GradientDescentOptimizer}\PY{p}{(}\PY{n}{learning\PYZus{}rate\PYZus{}g}\PY{p}{)}\PY{o}{.}\PYZbs{}
                                 \PY{n}{minimize}\PY{p}{(}\PY{n}{loss\PYZus{}g}\PY{p}{,} \PY{n}{var\PYZus{}list}\PY{o}{=}\PY{n}{g\PYZus{}parameters}\PY{p}{)}
         \PY{n}{train\PYZus{}d} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{train}\PY{o}{.}\PY{n}{GradientDescentOptimizer}\PY{p}{(}\PY{n}{learning\PYZus{}rate\PYZus{}d}\PY{p}{)}\PY{o}{.}\PYZbs{}
                                 \PY{n}{minimize}\PY{p}{(}\PY{n}{loss\PYZus{}d}\PY{p}{,} \PY{n}{var\PYZus{}list}\PY{o}{=}\PY{n}{d\PYZus{}parameters}\PY{p}{)}
@@ -449,9 +440,9 @@ variables. We then perform the learning steps. Finally we create a
 generated batch to export.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}8}]:} \PY{n}{res\PYZus{}matrix} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{p}{)}\PY{p}{)}
-        \PY{n}{gamma\PYZus{}out\PYZus{}vec}\PY{p}{,} \PY{n}{phi\PYZus{}out\PYZus{}vec} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{,} 
-                                \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+{\color{incolor}In [{\color{incolor} }]:} \PY{n}{res\PYZus{}matrix} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{p}{)}\PY{p}{)}
+        \PY{n}{gamma\PYZus{}out\PYZus{}vec}\PY{p}{,} \PY{n}{phi\PYZus{}out\PYZus{}vec} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{,}\PYZbs{}
+        \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{)}\PY{p}{)}
         
         \PY{n}{row} \PY{o}{=}\PY{l+m+mi}{0} \PY{c+c1}{\PYZsh{} This indexes which row of the res\PYZus{}matrix we are writing to.}
         \PY{k}{for} \PY{n}{i}\PY{p}{,} \PY{n}{p} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{:}
@@ -494,7 +485,7 @@ combinations we save the ouput to file, the resulting data has
 generated samples in columns 3 to 1002.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{res\PYZus{}dataframe} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{res\PYZus{}matrix}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}\PY{p}{)}
+{\color{incolor}In [{\color{incolor} }]:} \PY{n}{res\PYZus{}dataframe} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{res\PYZus{}matrix}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}\PY{p}{)}
         \PY{n}{gamma\PYZus{}dataframe} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{gamma\PYZus{}out\PYZus{}vec}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}\PY{p}{)}
         \PY{n}{phi\PYZus{}dataframe} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{phi\PYZus{}out\PYZus{}vec}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}\PY{p}{)}
         
