@@ -15,6 +15,9 @@ actual_text = re.split(r'\\begin{document}', f1)[1]
 
 actual_text = actual_text.replace('\maketitle','')
 actual_text = actual_text.replace('\end{document}','')
+actual_text = actual_text.replace('XYZ1',r'\ref{formulation}')
+actual_text = actual_text.replace('XYZ2',r'\ref{psi}')
+
 
 
 preamble = preamble.replace(r'\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth',
@@ -28,8 +31,10 @@ preamble = preamble.replace(r'\renewcommand{\includegraphics}[1]{\Oldincludegrap
 preamble = preamble.replace(r'\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}',
                             r'%\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}')
 preamble = preamble.replace(r'\usepackage{geometry}','\usepackage[margin=1.25in]{geometry}')
-
 preamble = preamble.replace('colorlinks=true','colorlinks=false')
+
+
+
 
 
 galr_preamble = open('/Users/Billy/Documents/Uni/cam/GAN/essay tex/galr_preamble.tex', 'w')
