@@ -193,7 +193,7 @@ if(loess_plot_KL){
                 ylab = expression(phi), zlab = list('Estimated KL Divergence',rot = 90), col = 'black',
                 shade = F,pretty=T)
   print(p1)
-  jpeg(save_picture_name('gd_loess_gen_to_real'), units="in", width=7, height=7, res=300)
+  jpeg(save_picture_name('loess_gen_to_real'), units="in", width=7, height=7, res=300)
   trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
   print(p1)
   dev.off()
