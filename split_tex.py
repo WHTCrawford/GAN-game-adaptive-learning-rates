@@ -32,7 +32,8 @@ preamble = preamble.replace(r'\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=
                             r'%\geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}')
 preamble = preamble.replace(r'\usepackage{geometry}','\usepackage[margin=1.25in]{geometry}')
 preamble = preamble.replace('colorlinks=true','colorlinks=false')
-
+preamble = preamble.replace(r'\DeclareCaptionLabelFormat{nolabel}{}',r'%\DeclareCaptionLabelFormat{nolabel}{}')
+preamble = preamble.replace(r'\captionsetup{labelformat=nolabel}',r'%\captionsetup{labelformat=nolabel}')
 
 
 

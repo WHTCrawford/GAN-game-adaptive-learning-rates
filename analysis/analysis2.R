@@ -20,7 +20,7 @@ qqplot = T
 plot_med_histogram_KL = T
 qqplot_median = T
 
-recalc_KL = T
+recalc_KL = F
 
 # Sub folder ################################################## 
 sub_folder = 'gd'
@@ -124,8 +124,9 @@ if(recalc_KL){
   
   write.csv(x = KL_dataframe, 'KL_divergence.csv',row.names = F)
 } else{
-  KL_dataframe <<- fread('KL_divergence.csv',header = T)
+  KL_dataframe <<- read.csv('KL_divergence.csv', header=T)
 }
+
 
 # LOESS KL plot ------
 
@@ -319,9 +320,6 @@ if(plot_best_histogram_KL){
 }
 
 # Best QQ plot -------
-
-vec = 1:10
-quantile(vec,probs = 1:100/100)
 
 
 qqplot_individual <- function(vec,title = '',xlab ='Theoretical Quantiles',

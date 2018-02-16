@@ -423,7 +423,7 @@ factor, \textbf{psi}, can be found in Appendix XYZ2.
     We now define the training steps:
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{n}{train\PYZus{}g} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{train}\PY{o}{.}\PY{n}{GradientDescentOptimizer}\PY{p}{(}\PY{n}{learning\PYZus{}rate\PYZus{}g}\PY{p}{)}\PY{o}{.}\PYZbs{}
+{\color{incolor}In [{\color{incolor}7}]:} \PY{n}{train\PYZus{}g} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{train}\PY{o}{.}\PY{n}{GradientDescentOptimizer}\PY{p}{(}\PY{n}{learning\PYZus{}rate\PYZus{}g}\PY{p}{)}\PY{o}{.}\PYZbs{}
                                 \PY{n}{minimize}\PY{p}{(}\PY{n}{loss\PYZus{}g}\PY{p}{,} \PY{n}{var\PYZus{}list}\PY{o}{=}\PY{n}{g\PYZus{}parameters}\PY{p}{)}
         \PY{n}{train\PYZus{}d} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{train}\PY{o}{.}\PY{n}{GradientDescentOptimizer}\PY{p}{(}\PY{n}{learning\PYZus{}rate\PYZus{}d}\PY{p}{)}\PY{o}{.}\PYZbs{}
                                 \PY{n}{minimize}\PY{p}{(}\PY{n}{loss\PYZus{}d}\PY{p}{,} \PY{n}{var\PYZus{}list}\PY{o}{=}\PY{n}{d\PYZus{}parameters}\PY{p}{)}
@@ -440,11 +440,11 @@ variables. We then perform the learning steps. Finally we create a
 generated batch to export.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{n}{res\PYZus{}matrix} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{p}{)}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}8}]:} \PY{n}{res\PYZus{}matrix} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{p}{)}\PY{p}{)}
         \PY{n}{gamma\PYZus{}out\PYZus{}vec}\PY{p}{,} \PY{n}{phi\PYZus{}out\PYZus{}vec} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{,}\PYZbs{}
         \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{)}\PY{p}{)}
         
-        \PY{n}{row} \PY{o}{=}\PY{l+m+mi}{0} \PY{c+c1}{\PYZsh{} This indexes which row of the res\PYZus{}matrix we are writing to.}
+        \PY{n}{row} \PY{o}{=}\PY{l+m+mi}{0} \PY{c+c1}{\PYZsh{} This indexes which row of res\PYZus{}matrix we are writing to.}
         \PY{k}{for} \PY{n}{i}\PY{p}{,} \PY{n}{p} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{phi\PYZus{}vec}\PY{p}{)}\PY{p}{:}
             \PY{k}{for} \PY{n}{j}\PY{p}{,} \PY{n}{k} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)}\PY{p}{:}
                 \PY{k}{with} \PY{n}{tf}\PY{o}{.}\PY{n}{Session}\PY{p}{(}\PY{p}{)} \PY{k}{as} \PY{n}{sess}\PY{p}{:}
@@ -485,7 +485,7 @@ combinations we save the ouput to file, the resulting data has
 generated samples in columns 3 to 1002.
 
     \begin{Verbatim}[commandchars=\\\{\}]
-{\color{incolor}In [{\color{incolor} }]:} \PY{n}{res\PYZus{}dataframe} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{res\PYZus{}matrix}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}\PY{p}{)}
+{\color{incolor}In [{\color{incolor}9}]:} \PY{n}{res\PYZus{}dataframe} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{res\PYZus{}matrix}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}\PY{p}{)}
         \PY{n}{gamma\PYZus{}dataframe} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{gamma\PYZus{}out\PYZus{}vec}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}\PY{p}{)}
         \PY{n}{phi\PYZus{}dataframe} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{n}{phi\PYZus{}out\PYZus{}vec}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}\PY{p}{)}
         

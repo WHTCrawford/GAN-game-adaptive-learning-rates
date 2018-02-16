@@ -42,22 +42,22 @@ def generator(input, parameters):
 
 
 # Create weights and biases variables
-weight_d_1 = tf.Variable(tf.ones([1, hidden_layer_size_d]))
-bias_d_1 = tf.Variable(tf.ones([hidden_layer_size_d]))
-weight_d_2 = tf.Variable(tf.ones([hidden_layer_size_d, hidden_layer_size_d]))
-bias_d_2 = tf.Variable(tf.ones([hidden_layer_size_d]))
-weight_d_3 = tf.Variable(tf.ones([hidden_layer_size_d, 1]))
-bias_d_3 = tf.Variable(tf.ones([1]))
+weight_d_1 = tf.Variable(tf.random_uniform([1, hidden_layer_size_d], minval=-1, maxval=1, dtype=tf.float32))
+bias_d_1 = tf.Variable(tf.random_uniform([hidden_layer_size_d], minval=-1, maxval=1, dtype=tf.float32))
+weight_d_2 = tf.Variable(tf.random_uniform([hidden_layer_size_d, hidden_layer_size_d], minval=-1, maxval=1, dtype=tf.float32))
+bias_d_2 = tf.Variable(tf.random_uniform([hidden_layer_size_d], minval=-1, maxval=1, dtype=tf.float32))
+weight_d_3 = tf.Variable(tf.random_uniform([hidden_layer_size_d, 1], minval=-1, maxval=1, dtype=tf.float32))
+bias_d_3 = tf.Variable(tf.random_uniform([1], minval=-1, maxval=1, dtype=tf.float32))
 
-d_parameters = [weight_d_1,bias_d_1, weight_d_2, bias_d_2,weight_d_3, 
-                bias_d_3]
+d_parameters = [weight_d_1,bias_d_1, weight_d_2, bias_d_2,weight_d_3, bias_d_3]
 
-weight_g_1 = tf.Variable(tf.ones([1, hidden_layer_size_g]))
-bias_g_1 = tf.Variable(tf.ones([hidden_layer_size_g]))
-weight_g_2 = tf.Variable(tf.ones([hidden_layer_size_g, 1]))
-bias_g_2 = tf.Variable(tf.ones([1]))
+weight_g_1 = tf.Variable(tf.random_uniform([1, hidden_layer_size_g], minval=-1, maxval=1, dtype=tf.float32))
+bias_g_1 = tf.Variable(tf.random_uniform([hidden_layer_size_g], minval=-1, maxval=1, dtype=tf.float32))
+weight_g_2 = tf.Variable(tf.random_uniform([hidden_layer_size_g, 1], minval=-1, maxval=1, dtype=tf.float32))
+bias_g_2 = tf.Variable(tf.random_uniform([1], minval=-1, maxval=1, dtype=tf.float32))
 
 g_parameters = [weight_g_1,bias_g_1, weight_g_2, bias_g_2]
+
 
 
 # losses
@@ -70,7 +70,7 @@ with tf.variable_scope("Discriminator") as scope:
 loss_d = tf.reduce_mean(-tf.log(d_output_real) - tf.log(1 - d_output_fake))
 loss_g = tf.reduce_mean(tf.log(1-d_output_fake))
 
-# Game Adaptive Learning Rate
+# Score Adaptive Learning Rate
 phi_g = tf.placeholder(tf.float32)
 phi_d = tf.placeholder(tf.float32)
 gamma_g = tf.placeholder(tf.float32)
@@ -101,7 +101,7 @@ train_d = tf.train.GradientDescentOptimizer(learning_rate_d).minimize(loss_d, va
 # train_d = tf.train.MomentumOptimizer(learning_rate_d,0.9).minimize(loss_d, var_list=d_parameters)
 
 
-data_directory = '/Users/Billy/PycharmProjects/GALR/data5/gd'
+data_directory = '/Users/Billy/PycharmProjects/GALR/data4/gd'
 os.chdir(data_directory)
 
 start_time = time.time()
