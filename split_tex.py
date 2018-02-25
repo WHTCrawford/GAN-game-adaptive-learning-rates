@@ -1,6 +1,6 @@
 import re
 
-f = open("GALR presentation.tex")
+f = open("SALR presentation.tex")
 
 
 f1 = f.read()

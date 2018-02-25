@@ -19,6 +19,7 @@ plot_best_histogram_KL = T
 qqplot = T
 plot_med_histogram_KL = T
 qqplot_median = T
+qqplot_randoms = T
 
 recalc_KL = F
 
@@ -153,6 +154,7 @@ theme.novpadding <- list(
 
 
 if(loess_plot_KL){
+  KL_dataframe[,3:4] = -KL_dataframe[,3:4]
   
   size_of_grid = 80
   
@@ -169,7 +171,7 @@ if(loess_plot_KL){
   new_data$Phi = sapply(new_data$Phi,function(x) as.numeric(gsub("Phi=", "", x)))
   trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
   p1 =wireframe(value ~ Gamma * Phi, data = new_data, xlab = expression(gamma), par.settings = theme.novpadding,
-                ylab = expression(phi), zlab = list('Estimated KL Divergence',rot = 90), col = 'black',
+                ylab = expression(phi), zlab = list('-Estimated KL Divergence',rot = 90), col = 'black',
                 shade = F,pretty=T)
   print(p1)
   jpeg(save_picture_name('loess'), units="in", width=7, height=7, res=300)
@@ -191,13 +193,14 @@ if(loess_plot_KL){
   new_data$Phi = sapply(new_data$Phi,function(x) as.numeric(gsub("Phi=", "", x)))
   trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
   p1 =wireframe(value ~ Gamma * Phi, data = new_data, xlab = expression(gamma), par.settings = theme.novpadding,
-                ylab = expression(phi), zlab = list('Estimated KL Divergence',rot = 90), col = 'black',
+                ylab = expression(phi), zlab = list('-Estimated KL Divergence',rot = 90), col = 'black',
                 shade = F,pretty=T)
   print(p1)
   jpeg(save_picture_name('loess_gen_to_real'), units="in", width=7, height=7, res=300)
   trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
   print(p1)
   dev.off()
+  KL_dataframe[,3:4] = -KL_dataframe[,3:4]
 }  
 
 
@@ -426,3 +429,54 @@ if(qqplot_median){
   dev.off()
   # multiplot_QQ(q1, q2, q3, q4, q5, q6, q7, q8,q9, cols=3)
 }
+
+
+# Overall median hist ----
+
+which.percentile = function(x, perc) {
+  if(perc>1){
+    perc = perc/100
+  }
+  index = as.integer(length(x)*perc)
+  percentile = sort(x)[index]
+  return(which(percentile == x))
+}
+
+median_row = as.numeric(collected_data[which.median(KL_dataframe[,3]),
+                                       3:ncol(collected_data)])
+
+jpeg(save_picture_name('overall_median_hist'), units="in", width=10, height=7, res=300)
+plot_individual_hist(median_row, max_density = 0.5, theme_choice = export_theme)
+dev.off()
+
+
+
+
+# 9 random QQ plots ----
+
+
+if(qqplot_randoms){ 
+  
+  random_data = standardized_data[sample(1:nrow(standardized_data),size = 9, replace = F),]
+  
+  titles = list()
+  for(i in 1:9){
+    titles[[i]] = bquote(gamma~'='~.(random_data$Gamma[i])~', '
+                        ~phi~'='~.(random_data$Phi[i]))
+  }
+  
+  for(i in 1:9){
+    name = paste('p',i,sep = '')
+    assign(name,qqplot_individual(as.numeric(random_data[i,3:ncol(random_data)])
+                                  , titles[[i]],xlab ='',ylab = '',theme_choice = export_theme))
+  }
+  
+  
+  jpeg(save_picture_name('QQplot_random'), units="in", width=16, height=12, res=300)
+  multiplot_QQ(p1, p2, p3, p4, p5, p6, p7, p8,p9, cols=3)
+  dev.off()
+  # multiplot_QQ(q1, q2, q3, q4, q5, q6, q7, q8,q9, cols=3)
+}
+
+
+

@@ -141,7 +141,7 @@
     \def\gt{>}
     \def\lt{<}
     % Document parameters
-    \title{GALR presentation}
+    \title{SALR presentation}
     
     
     
@@ -356,20 +356,30 @@ all initialized to 0.
             \PY{n}{output} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{matmul}\PY{p}{(}\PY{n}{activ\PYZus{}1}\PY{p}{,} \PY{n}{parameters}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}\PY{p}{,} \PY{n}{parameters}\PY{p}{[}\PY{l+m+mi}{3}\PY{p}{]}\PY{p}{)}
             \PY{k}{return} \PY{n}{output}
         
-        \PY{n}{weight\PYZus{}d\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-        \PY{n}{bias\PYZus{}d\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-        \PY{n}{weight\PYZus{}d\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{,} \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-        \PY{n}{bias\PYZus{}d\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-        \PY{n}{weight\PYZus{}d\PYZus{}3} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-        \PY{n}{bias\PYZus{}d\PYZus{}3} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+        \PY{n}{weight\PYZus{}d\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{,} 
+                                    \PY{n}{minval}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
+        \PY{n}{bias\PYZus{}d\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{,} 
+                                    \PY{n}{minval}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
+        \PY{n}{weight\PYZus{}d\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{,} 
+                \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{,} \PY{n}{minval}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
+        \PY{n}{bias\PYZus{}d\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{]}\PY{p}{,} 
+                                    \PY{n}{minval}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
+        \PY{n}{weight\PYZus{}d\PYZus{}3} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}d}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} 
+                                    \PY{n}{minval}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
+        \PY{n}{bias\PYZus{}d\PYZus{}3} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{minval}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} 
+                                                         \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
         
-        \PY{n}{d\PYZus{}parameters} \PY{o}{=} \PY{p}{[}\PY{n}{weight\PYZus{}d\PYZus{}1}\PY{p}{,}\PY{n}{bias\PYZus{}d\PYZus{}1}\PY{p}{,} \PY{n}{weight\PYZus{}d\PYZus{}2}\PY{p}{,} \PY{n}{bias\PYZus{}d\PYZus{}2}\PY{p}{,}\PY{n}{weight\PYZus{}d\PYZus{}3}\PY{p}{,} 
-                        \PY{n}{bias\PYZus{}d\PYZus{}3}\PY{p}{]}
+        \PY{n}{d\PYZus{}parameters} \PY{o}{=} \PY{p}{[}\PY{n}{weight\PYZus{}d\PYZus{}1}\PY{p}{,}\PY{n}{bias\PYZus{}d\PYZus{}1}\PY{p}{,} \PY{n}{weight\PYZus{}d\PYZus{}2}\PY{p}{,} \PY{n}{bias\PYZus{}d\PYZus{}2}\PY{p}{,}
+                        \PY{n}{weight\PYZus{}d\PYZus{}3}\PY{p}{,} \PY{n}{bias\PYZus{}d\PYZus{}3}\PY{p}{]}
         
-        \PY{n}{weight\PYZus{}g\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-        \PY{n}{bias\PYZus{}g\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-        \PY{n}{weight\PYZus{}g\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
-        \PY{n}{bias\PYZus{}g\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{ones}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+        \PY{n}{weight\PYZus{}g\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{]}\PY{p}{,} 
+                                    \PY{n}{minval}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
+        \PY{n}{bias\PYZus{}g\PYZus{}1} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{]}\PY{p}{,} 
+                                    \PY{n}{minval}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
+        \PY{n}{weight\PYZus{}g\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{n}{hidden\PYZus{}layer\PYZus{}size\PYZus{}g}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} 
+                                    \PY{n}{minval}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
+        \PY{n}{bias\PYZus{}g\PYZus{}2} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{Variable}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{random\PYZus{}uniform}\PY{p}{(}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n}{minval}\PY{o}{=}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{maxval}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} 
+                                                         \PY{n}{dtype}\PY{o}{=}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{p}{)}
         
         \PY{n}{g\PYZus{}parameters} \PY{o}{=} \PY{p}{[}\PY{n}{weight\PYZus{}g\PYZus{}1}\PY{p}{,}\PY{n}{bias\PYZus{}g\PYZus{}1}\PY{p}{,} \PY{n}{weight\PYZus{}g\PYZus{}2}\PY{p}{,} \PY{n}{bias\PYZus{}g\PYZus{}2}\PY{p}{]}
 \end{Verbatim}
@@ -381,8 +391,8 @@ holders \textbf{real\_dist\_placeholder} and
 into \(G\) and \(D\). We then define the output from \(D\) when it is
 judging real and fake samples using the TensorFlow function
 \textbf{variable\_scope.reuse\_variables} to ensure that the same
-parameters are used for the discriminator when it is inputed a real
-sample and a fake sample. The losses are as described in Section XYZ1.
+parameters are used for the discriminator when it is given a real sample
+and a fake sample. The losses are as described in Section XYZ1.
 
     \begin{Verbatim}[commandchars=\\\{\}]
 {\color{incolor}In [{\color{incolor}5}]:} \PY{n}{real\PYZus{}dist\PYZus{}placeholder} \PY{o}{=} \PY{n}{tf}\PY{o}{.}\PY{n}{placeholder}\PY{p}{(}\PY{n}{tf}\PY{o}{.}\PY{n}{float32}\PY{p}{,} \PY{n}{shape}\PY{o}{=}\PY{p}{(}\PY{n+nb+bp}{None}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}
