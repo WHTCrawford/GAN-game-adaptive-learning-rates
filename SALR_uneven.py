@@ -26,7 +26,7 @@ real_sd = 1
 # discriminator and generator NNs
 def discriminator(input, parameters):
     pre_1 = tf.add(tf.matmul(tf.to_float(input), parameters[0]), parameters[1])
-    activ_1 = tf.tanh(pre_1)
+    activ_1 = tf.nn.relu(pre_1)
     pre_2 = tf.add(tf.matmul(activ_1, parameters[2]), parameters[3])
     output = tf.sigmoid(pre_2)
     return output
@@ -34,10 +34,12 @@ def discriminator(input, parameters):
 
 def generator(input, parameters):
     pre_1 = tf.add(tf.matmul(tf.to_float(input), parameters[0]), parameters[1])
-    activ_1 = tf.tanh(pre_1)
+    activ_1 = tf.nn.relu(pre_1)
     pre_2 = tf.add(tf.matmul(activ_1, parameters[2]), parameters[3])
-    activ_2 = tf.tanh(pre_2)
-    output = tf.add(tf.matmul(activ_2, parameters[4]), parameters[5])
+    activ_2 = tf.nn.relu(pre_2)
+    pre_3 = tf.add(tf.matmul(activ_2, parameters[4]), parameters[5])
+    activ_3 = tf.nn.relu(pre_3)
+    output = tf.add(tf.matmul(activ_3, parameters[6]), parameters[7])
     return output
 
 
@@ -53,10 +55,12 @@ weight_g_1 = tf.Variable(tf.random_uniform([1, hidden_layer_size_g], minval=-1, 
 bias_g_1 = tf.Variable(tf.random_uniform([hidden_layer_size_g], minval=-1, maxval=1, dtype=tf.float32))
 weight_g_2 = tf.Variable(tf.random_uniform([hidden_layer_size_g, hidden_layer_size_g], minval=-1, maxval=1, dtype=tf.float32))
 bias_g_2 = tf.Variable(tf.random_uniform([hidden_layer_size_g], minval=-1, maxval=1, dtype=tf.float32))
-weight_g_3 = tf.Variable(tf.random_uniform([hidden_layer_size_g, 1], minval=-1, maxval=1, dtype=tf.float32))
-bias_g_3 = tf.Variable(tf.random_uniform([1], minval=-1, maxval=1, dtype=tf.float32))
+weight_g_3 = tf.Variable(tf.random_uniform([hidden_layer_size_g, hidden_layer_size_g], minval=-1, maxval=1, dtype=tf.float32))
+bias_g_3 = tf.Variable(tf.random_uniform([hidden_layer_size_g], minval=-1, maxval=1, dtype=tf.float32))
+weight_g_4 = tf.Variable(tf.random_uniform([hidden_layer_size_g, 1], minval=-1, maxval=1, dtype=tf.float32))
+bias_g_4 = tf.Variable(tf.random_uniform([1], minval=-1, maxval=1, dtype=tf.float32))
 
-g_parameters = [weight_g_1,bias_g_1, weight_g_2, bias_g_2, weight_g_3, bias_g_3]
+g_parameters = [weight_g_1,bias_g_1, weight_g_2, bias_g_2, weight_g_3, bias_g_3, weight_g_4, bias_g_4]
 
 
 
