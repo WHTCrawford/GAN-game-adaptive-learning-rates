@@ -433,6 +433,17 @@ if(qqplot_median){
 
 # Overall median hist ----
 
+
+
+median_row = as.numeric(collected_data[which.median(KL_dataframe[,3]),
+                                       3:ncol(collected_data)])
+
+jpeg(save_picture_name('overall_median_hist'), units="in", width=10, height=7, res=300)
+plot_individual_hist(median_row, max_density = 0.5, theme_choice = export_theme)
+dev.off()
+
+# Just phi = 0 hist ----
+
 which.percentile = function(x, perc) {
   if(perc>1){
     perc = perc/100
@@ -442,17 +453,16 @@ which.percentile = function(x, perc) {
   return(which(percentile == x))
 }
 
-median_row = as.numeric(collected_data[which.median(KL_dataframe[,3]),
+median_row_phi_0 = as.numeric(collected_data[which.percentile(KL_dataframe[KL_dataframe$Phi == 0,3], 0.5),
                                        3:ncol(collected_data)])
 
-jpeg(save_picture_name('overall_median_hist'), units="in", width=10, height=7, res=300)
-plot_individual_hist(median_row, max_density = 0.5, theme_choice = export_theme)
+jpeg(save_picture_name('hist_phi_0'), units="in", width=10, height=7, res=300)
+plot_individual_hist(median_row_phi_0, max_density = 0.5, theme_choice = export_theme)
 dev.off()
 
 
-
-
 # 9 random QQ plots ----
+
 
 
 if(qqplot_randoms){ 
