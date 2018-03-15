@@ -296,19 +296,19 @@ first \(\phi\) with 0. This gives sixteen combinations of \(\phi\) and
 \(\gamma\), a quarter of which have \(\phi = 0\). This was done because
 \(\phi = 0\) corresponds to standard learning rates which we wanted to
 compare to game adaptive learning rates. Then for each step from 1 to
-\textbf{number\_of\_epochs} we generate \textbf{batch\_size} real
-samples and \textbf{batch\_size} fake samples and used these to carry
-out simulateneous minibatch gradient descent. In our experiments we
-iterated this process many times in order to collect over 10,000
-parameter combinations in total, for simplicity we display the code for
-a single group of the sixteen parameter combinations.
+\textbf{number\_of\_steps} we generate \textbf{batch\_size} real samples
+and \textbf{batch\_size} fake samples and used these to carry out
+simulateneous minibatch gradient descent. In our experiments we iterated
+this process many times in order to collect over 10,000 parameter
+combinations in total, for simplicity we display the code for a single
+group of the sixteen parameter combinations.
 
     \begin{Verbatim}[commandchars=\\\{\}]
 {\color{incolor}In [{\color{incolor}2}]:} \PY{n}{gamma\PYZus{}vec} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mf}{0.0000001}\PY{p}{,}\PY{l+m+mf}{0.1}\PY{p}{,}\PY{l+m+mi}{4}\PY{p}{)}
         \PY{n}{phi\PYZus{}vec} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mf}{0.0}\PY{p}{,} \PY{l+m+mf}{0.1}\PY{p}{,} \PY{l+m+mi}{4}\PY{p}{)}
         \PY{n}{phi\PYZus{}vec}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{l+m+mf}{0.0}
         
-        \PY{n}{number\PYZus{}of\PYZus{}epochs} \PY{o}{=} \PY{l+m+mi}{100000}
+        \PY{n}{number\PYZus{}of\PYZus{}steps} \PY{o}{=} \PY{l+m+mi}{100000}
         \PY{n}{batch\PYZus{}size} \PY{o}{=} \PY{l+m+mi}{1000}
 \end{Verbatim}
 
@@ -459,7 +459,7 @@ generated batch to export.
             \PY{k}{for} \PY{n}{j}\PY{p}{,} \PY{n}{k} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{gamma\PYZus{}vec}\PY{p}{)}\PY{p}{:}
                 \PY{k}{with} \PY{n}{tf}\PY{o}{.}\PY{n}{Session}\PY{p}{(}\PY{p}{)} \PY{k}{as} \PY{n}{sess}\PY{p}{:}
                     \PY{n}{tf}\PY{o}{.}\PY{n}{global\PYZus{}variables\PYZus{}initializer}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{run}\PY{p}{(}\PY{p}{)}
-                    \PY{k}{for} \PY{n}{step} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{number\PYZus{}of\PYZus{}epochs}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+                    \PY{k}{for} \PY{n}{step} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{number\PYZus{}of\PYZus{}steps}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
                         \PY{n}{generator\PYZus{}input} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{,} 
                                                             \PY{p}{(}\PY{n}{batch\PYZus{}size}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}\PY{p}{)}
                         \PY{n}{real\PYZus{}dist} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{normal}\PY{p}{(}\PY{n}{real\PYZus{}mean}\PY{p}{,} \PY{n}{real\PYZus{}sd}\PY{p}{,} 

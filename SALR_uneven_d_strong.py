@@ -15,7 +15,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 number_of_trails = 100
 number_of_epochs = 50000
 batch_size = 2000
-hidden_layer_size_d = 20
+hidden_layer_size_d = 12
 hidden_layer_size_g = 6
 
 # define actual distribution
@@ -30,9 +30,7 @@ def discriminator(input, parameters):
     pre_2 = tf.add(tf.matmul(activ_1, parameters[2]), parameters[3])
     activ_2 = tf.nn.relu(pre_2)
     pre_3 = tf.add(tf.matmul(activ_2, parameters[4]), parameters[5])
-    activ_3 = tf.nn.relu(pre_3)
-    pre_4 = tf.add(tf.matmul(activ_3, parameters[6]), parameters[7])
-    output = tf.sigmoid(pre_4)
+    output = tf.sigmoid(pre_3)
     return output
 
 
@@ -48,12 +46,10 @@ weight_d_1 = tf.Variable(tf.random_uniform([1, hidden_layer_size_d], minval=-1, 
 bias_d_1 = tf.Variable(tf.random_uniform([hidden_layer_size_d], minval=-1, maxval=1, dtype=tf.float32))
 weight_d_2 = tf.Variable(tf.random_uniform([hidden_layer_size_d, hidden_layer_size_d], minval=-1, maxval=1, dtype=tf.float32))
 bias_d_2 = tf.Variable(tf.random_uniform([hidden_layer_size_d], minval=-1, maxval=1, dtype=tf.float32))
-weight_d_3 = tf.Variable(tf.random_uniform([hidden_layer_size_d, hidden_layer_size_d], minval=-1, maxval=1, dtype=tf.float32))
-bias_d_3 = tf.Variable(tf.random_uniform([hidden_layer_size_d], minval=-1, maxval=1, dtype=tf.float32))
-weight_d_4 = tf.Variable(tf.random_uniform([hidden_layer_size_d, 1], minval=-1, maxval=1, dtype=tf.float32))
-bias_d_4 = tf.Variable(tf.random_uniform([1], minval=-1, maxval=1, dtype=tf.float32))
+weight_d_3 = tf.Variable(tf.random_uniform([hidden_layer_size_d, 1], minval=-1, maxval=1, dtype=tf.float32))
+bias_d_3 = tf.Variable(tf.random_uniform([1], minval=-1, maxval=1, dtype=tf.float32))
 
-d_parameters = [weight_d_1,bias_d_1, weight_d_2, bias_d_2, weight_d_3, bias_d_3,weight_d_4, bias_d_4]
+d_parameters = [weight_d_1,bias_d_1, weight_d_2, bias_d_2, weight_d_3, bias_d_3]
 
 weight_g_1 = tf.Variable(tf.random_uniform([1, hidden_layer_size_g], minval=-1, maxval=1, dtype=tf.float32))
 bias_g_1 = tf.Variable(tf.random_uniform([hidden_layer_size_g], minval=-1, maxval=1, dtype=tf.float32))
@@ -163,7 +159,7 @@ for it in range(1,number_of_trails+1):
                 # sns.distplot(real_dist, hist=False, rug=False)
                 # plt.show()
             
-            if row % 2 == 0 and row != 0: 
+            if row % 4 == 0 and row != 0: 
                 print 'Cooling, 1 mins remaining'
                 time.sleep(60)
 

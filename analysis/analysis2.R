@@ -21,13 +21,14 @@ plot_med_histogram_KL = T
 qqplot_median = T
 qqplot_randoms = T
 
-recalc_KL = F
+recalc_KL = T
 
 # Sub folder ################################################## 
+main_folder = 'data_uneven'
 sub_folder = 'gd'
 
 save_picture_name = function(name){
-  dir = paste(c('/Users/Billy/Documents/Uni/cam/GAN/essay tex/plots_pictures/',sub_folder,'_',name,'.jpeg'),
+  dir = paste(c('/Users/Billy/Documents/Uni/cam/GAN/essay tex/plots_pictures/',main_folder,'_',sub_folder,'_',name,'.jpeg'),
               collapse = '')
   return(dir)
 }
@@ -56,7 +57,7 @@ rstudio_theme = theme(text=element_text(size=8),
 
 # Collect data ################################################## 
 
-data_path = paste('/Users/Billy/PycharmProjects/GALR/data4/',sub_folder, sep = '')
+data_path = paste0(c('/Users/Billy/PycharmProjects/GALR/',main_folder,'/',sub_folder), collapse='')
 setwd(data_path)
 
 collected_data = fread('output.csv', header = F, sep = ',')
@@ -97,6 +98,12 @@ if(phi_against_gamma){
   print(p1)
   dev.off()
 }
+
+# How many NaNs ----
+
+means = rowMeans(collected_data[,3:ncol(collected_data)])
+mean(means > 0 | means < 0) 
+
 
 # Calc KL Divergence and save to file -------
 
@@ -149,7 +156,7 @@ theme.novpadding <- list(
     axis.key.padding = 0,
     right.padding = 0
   ),
-  box.3d = list(col=c(1,1,NA,NA,1,NA,1,1,1))
+  box.3d = list(col=c(1,NA,NA,1,1,NA,1,1,1))
 )
 
 
@@ -157,8 +164,9 @@ if(loess_plot_KL){
   KL_dataframe[,3:4] = -KL_dataframe[,3:4]
   
   size_of_grid = 80
+  span1 = 0.5
   
-  fit_loess = loess(KL_real_gen~Gamma*Phi,data =KL_dataframe, span = 0.15)
+  fit_loess = loess(KL_real_gen~Gamma*Phi,data =KL_dataframe, span = span1)
   
   g_p_grid = expand.grid(list(Gamma = seq(min(KL_dataframe$Gamma), max(KL_dataframe$Phi),
                                       length.out = size_of_grid), 
@@ -172,15 +180,18 @@ if(loess_plot_KL){
   trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
   p1 =wireframe(value ~ Gamma * Phi, data = new_data, xlab = expression(gamma), par.settings = theme.novpadding,
                 ylab = expression(phi), zlab = list('-Estimated KL Divergence',rot = 90), col = 'black',
-                shade = F,pretty=T)
+                shade = F,pretty=T,scales = list(x =list(arrows=F),
+                                                 y=list(arrows=F), 
+                                                 z = list(arrows = T)),
+                screen = list(z = -50, x = -60))
   print(p1)
   jpeg(save_picture_name('loess'), units="in", width=7, height=7, res=300)
-  trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
+  #trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
   print(p1)
   dev.off()
   # other KL divegence
   
-  fit_loess = loess(KL_gen_real~Gamma*Phi,data =KL_dataframe, span = 0.15)
+  fit_loess = loess(KL_gen_real~Gamma*Phi,data =KL_dataframe, span = span1)
   
   g_p_grid = expand.grid(list(Gamma = seq(min(KL_dataframe$Gamma), max(KL_dataframe$Phi),
                                           length.out = size_of_grid), 
@@ -194,7 +205,10 @@ if(loess_plot_KL){
   trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
   p1 =wireframe(value ~ Gamma * Phi, data = new_data, xlab = expression(gamma), par.settings = theme.novpadding,
                 ylab = expression(phi), zlab = list('-Estimated KL Divergence',rot = 90), col = 'black',
-                shade = F,pretty=T)
+                shade = F,pretty=T,scales = list(x =list(arrows=F),
+                                                 y=list(arrows=F), 
+                                                 z = list(arrows=T)),
+                screen = list(z = -50, x = -60))
   print(p1)
   jpeg(save_picture_name('loess_gen_to_real'), units="in", width=7, height=7, res=300)
   trellis.par.set("axis.line",list(col=NA,lty=1,lwd=1))
