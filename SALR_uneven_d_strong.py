@@ -12,7 +12,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # Structure: in each trial generate parameters, then for number_of_epochs
 # generate a batch of size 'batch_size' each time from the input distribution and the real distribution
 # and train the GAN on it
-number_of_trails = 100
+number_of_trails = 1000
 number_of_epochs = 50000
 batch_size = 2000
 hidden_layer_size_d = 12

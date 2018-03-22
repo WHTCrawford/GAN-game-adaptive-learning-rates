@@ -9,6 +9,7 @@ suppressMessages(suppressWarnings(library(plotly)))
 library(lattice)
 library(FNN)
 library(pbapply)
+library('grDevices')
 source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
 
 
@@ -21,10 +22,10 @@ plot_med_histogram_KL = T
 qqplot_median = T
 qqplot_randoms = T
 
-recalc_KL = T
+recalc_KL = F
 
 # Sub folder ################################################## 
-main_folder = 'data_uneven'
+main_folder = 'data_uneven2'
 sub_folder = 'gd'
 
 save_picture_name = function(name){
@@ -503,4 +504,140 @@ if(qqplot_randoms){
 }
 
 
+
+
+# bring in control data ------
+
+controls = c('adam','momentum')
+
+control_data_sets = list()
+control_standardized_sets = list()
+kl_controls = list()
+
+control_data_sets[[1]] = collected_data[collected_data$Phi == 0,]
+control_standardized_sets[[1]] = standardized_data[collected_data$Phi == 0,]
+kl_controls[[1]] = KL_dataframe[KL_dataframe$Phi == 0,]
+
+
+for(i in 2:3){
+  
+  data_path = paste0(c('/Users/Billy/PycharmProjects/GALR/data_control2/',controls[i-1]), collapse='')
+  
+  setwd(data_path)
+  
+  collected_data1 = fread('output.csv', header = F, sep = ',')
+  collected_data1 = data.matrix(collected_data1)
+  collected_data1 = na.omit(collected_data1)
+  collected_data1= data.frame(Gamma =collected_data1[,1] ,
+                             collected_data1[,2:ncol(collected_data1)])
+  
+  
+  standardized_data1 = collected_data1
+  standardized_data1[,2:ncol(standardized_data1)] = standardized_data1[,2:ncol(standardized_data1)] -6
+  
+  print(nrow(collected_data1))
+  
+  control_data_sets[[i]] = collected_data1
+  control_standardized_sets[[i]] = standardized_data1
+  
+  if(recalc_KL){
+    
+    real_dist = rnorm(10000 , 6,1)
+    
+    kl_to_real = function(vec){
+      vec_1 = as.numeric(vec)
+      return(KL.divergence(real_dist,vec_1,k=10)[10])
+    }
+    
+    kl_from_real = function(vec){
+      vec_1 = as.numeric(vec)
+      return(KL.divergence(vec_1,real_dist,k=10)[10])
+    }
+    
+    KL_vec = pbapply(collected_data1[,2:ncol(collected_data1)],MARGIN = 1,kl_to_real)
+    
+    KL_vec2 = pbapply(collected_data1[,2:ncol(collected_data1)],MARGIN = 1,kl_from_real)
+    
+    KL_dataframe1 = data.frame(Gamma = collected_data1[,1],
+                                Phi = collected_data1[,2],
+                                KL_real_gen = KL_vec,
+                                KL_gen_real = KL_vec2)
+    
+    kl_controls[[i]]  = KL_dataframe1
+    
+    write.csv(x = KL_dataframe, 'KL_divergence.csv',row.names = F)
+  } else{
+    KL_dataframe1 = read.csv('KL_divergence.csv', header=T)
+    kl_controls[[i]] = KL_dataframe1
+  }
+  
+}
+
+
+
+# find high and low points of smoothed surface ----
+
+
+size_of_grid = 80
+span1 = 0.5
+
+fit_loess = loess(KL_real_gen~Gamma*Phi,data =KL_dataframe, span = span1)
+
+g_p_grid = expand.grid(list(Gamma = seq(min(KL_dataframe$Gamma), max(KL_dataframe$Phi),
+                                        length.out = size_of_grid), 
+                            Phi = seq(min(KL_dataframe$Gamma),  max(KL_dataframe$Phi), 
+                                      length.out = size_of_grid)))
+predicted_KL = predict(fit_loess, newdata = g_p_grid)
+
+predicted_KL1 = melt(predicted_KL)
+predicted_KL1$Gamma = sapply(predicted_KL1$Gamma,function(x) as.numeric(gsub("Gamma=", "", x)))
+predicted_KL1$Phi = sapply(predicted_KL1$Phi,function(x) as.numeric(gsub("Phi=", "", x)))
+
+predicted_KL1 = na.omit(predicted_KL1)
+
+best_phi = predicted_KL1[which.min(predicted_KL1[,3]),2]
+worst_phi = predicted_KL1[which.max(predicted_KL1[,3]),2]
+
+band_half_size = 0.001
+
+best_band = KL_dataframe[KL_dataframe$Phi > best_phi - band_half_size &
+                           KL_dataframe$Phi < best_phi + band_half_size, ]
+worst_band = KL_dataframe[KL_dataframe$Phi > worst_phi - band_half_size & 
+                            KL_dataframe$Phi < worst_phi + band_half_size, ]
+
+
+all_data_to_plot  = data.frame(Gamma = best_band[,1], variable = replicate(nrow(best_band),'Best')
+                               , value =best_band[,3])
+
+all_data_to_plot = rbind(all_data_to_plot, data.frame(Gamma = worst_band[,1], 
+                                                      variable = replicate(nrow(worst_band),'Worst')
+                                                      , value =worst_band[,3]))     
+
+names = c('SGD', 'Adam','Momentum')
+for(i in 1:3){
+  dat = kl_controls[[i]]
+  all_data_to_plot = rbind(all_data_to_plot, data.frame(Gamma = dat[,1], 
+                                                        variable = replicate(nrow(dat),
+                                                                             names[i])
+                                                        , value =dat[,3]))                               
+  
+}
+
+
+
+
+
+
+
+
+best_title = bquote(phi %~~% .(round(best_phi,1)))
+
+
+
+
+ggplot(all_data_to_plot,aes(x = Gamma, y = value, colour =variable )) +
+  geom_smooth(aes(colour = variable),se = F)+
+  scale_colour_discrete(name = 'Line',
+                      breaks = c('Best','Worst','SGD','Adam','Momentum'),
+                      labels = c(best_title,'Worst','SGD','Adam','Momentum')) 
 
