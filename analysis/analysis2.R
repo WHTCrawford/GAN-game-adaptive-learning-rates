@@ -84,6 +84,76 @@ phi_boundaries = c(min(collected_data$Phi),
                      (max(collected_data$Phi)-min(collected_data$Phi))/2)
 
 
+# Bring in control data ------
+
+controls = c('adam','momentum')
+
+control_data_sets = list()
+control_standardized_sets = list()
+kl_controls = list()
+
+control_data_sets[[1]] = collected_data[collected_data$Phi == 0,]
+control_standardized_sets[[1]] = standardized_data[collected_data$Phi == 0,]
+kl_controls[[1]] = KL_dataframe[KL_dataframe$Phi == 0,]
+
+
+
+for(i in 2:3){
+  
+  data_path = paste0(c('/Users/Billy/PycharmProjects/GALR/data_control2/',controls[i-1]), collapse='')
+  
+  setwd(data_path)
+  
+  collected_data1 = fread('output.csv', header = F, sep = ',')
+  collected_data1 = data.matrix(collected_data1)
+  collected_data1 = na.omit(collected_data1)
+  collected_data1= data.frame(Gamma =collected_data1[,1] ,
+                              collected_data1[,2:ncol(collected_data1)])
+  
+  
+  standardized_data1 = collected_data1
+  standardized_data1[,2:ncol(standardized_data1)] = standardized_data1[,2:ncol(standardized_data1)] -6
+  
+  print(nrow(collected_data1))
+  
+  control_data_sets[[i]] = collected_data1
+  control_standardized_sets[[i]] = standardized_data1
+  
+  if(recalc_KL){
+    
+    real_dist = rnorm(10000 , 6,1)
+    
+    kl_to_real = function(vec){
+      vec_1 = as.numeric(vec)
+      return(KL.divergence(real_dist,vec_1,k=10)[10])
+    }
+    
+    kl_from_real = function(vec){
+      vec_1 = as.numeric(vec)
+      return(KL.divergence(vec_1,real_dist,k=10)[10])
+    }
+    
+    KL_vec = pbapply(collected_data1[,2:ncol(collected_data1)],MARGIN = 1,kl_to_real)
+    
+    KL_vec2 = pbapply(collected_data1[,2:ncol(collected_data1)],MARGIN = 1,kl_from_real)
+    
+    KL_dataframe1 = data.frame(Gamma = collected_data1[,1],
+                               Phi = collected_data1[,2],
+                               KL_real_gen = KL_vec,
+                               KL_gen_real = KL_vec2)
+    
+    kl_controls[[i]]  = KL_dataframe1
+    
+    write.csv(x = KL_dataframe1, 'KL_divergence.csv',row.names = F)
+  } else{
+    KL_dataframe1 = read.csv(paste0(c(data_path,'/KL_divergence.csv'), collapse = ''), header=T)
+    kl_controls[[i]] = KL_dataframe1
+  }
+  
+}
+
+
+
 # Samples plot  ################################################## 
 
 if(phi_against_gamma){
@@ -506,75 +576,6 @@ if(qqplot_randoms){
 
 
 
-# bring in control data ------
-
-controls = c('adam','momentum')
-
-control_data_sets = list()
-control_standardized_sets = list()
-kl_controls = list()
-
-control_data_sets[[1]] = collected_data[collected_data$Phi == 0,]
-control_standardized_sets[[1]] = standardized_data[collected_data$Phi == 0,]
-kl_controls[[1]] = KL_dataframe[KL_dataframe$Phi == 0,]
-
-
-
-for(i in 2:3){
-  
-  data_path = paste0(c('/Users/Billy/PycharmProjects/GALR/data_control2/',controls[i-1]), collapse='')
-  
-  setwd(data_path)
-  
-  collected_data1 = fread('output.csv', header = F, sep = ',')
-  collected_data1 = data.matrix(collected_data1)
-  collected_data1 = na.omit(collected_data1)
-  collected_data1= data.frame(Gamma =collected_data1[,1] ,
-                             collected_data1[,2:ncol(collected_data1)])
-  
-  
-  standardized_data1 = collected_data1
-  standardized_data1[,2:ncol(standardized_data1)] = standardized_data1[,2:ncol(standardized_data1)] -6
-  
-  print(nrow(collected_data1))
-  
-  control_data_sets[[i]] = collected_data1
-  control_standardized_sets[[i]] = standardized_data1
-  
-  if(recalc_KL){
-    
-    real_dist = rnorm(10000 , 6,1)
-    
-    kl_to_real = function(vec){
-      vec_1 = as.numeric(vec)
-      return(KL.divergence(real_dist,vec_1,k=10)[10])
-    }
-    
-    kl_from_real = function(vec){
-      vec_1 = as.numeric(vec)
-      return(KL.divergence(vec_1,real_dist,k=10)[10])
-    }
-    
-    KL_vec = pbapply(collected_data1[,2:ncol(collected_data1)],MARGIN = 1,kl_to_real)
-    
-    KL_vec2 = pbapply(collected_data1[,2:ncol(collected_data1)],MARGIN = 1,kl_from_real)
-    
-    KL_dataframe1 = data.frame(Gamma = collected_data1[,1],
-                                Phi = collected_data1[,2],
-                                KL_real_gen = KL_vec,
-                                KL_gen_real = KL_vec2)
-    
-    kl_controls[[i]]  = KL_dataframe1
-    
-    write.csv(x = KL_dataframe1, 'KL_divergence.csv',row.names = F)
-  } else{
-    KL_dataframe1 = read.csv(paste0(c(data_path,'/KL_divergence.csv'), collapse = ''), header=T)
-    kl_controls[[i]] = KL_dataframe1
-  }
-  
-}
-
-
 # find high and low points of smoothed surface ----
 
 
@@ -630,12 +631,33 @@ worst_title = bquote('Score Adaptive, '~phi %~~% .(round(worst_phi,2)))
 gamma_title = bquote(gamma)
 
 
+
+
+export_theme2 = theme(text=element_text(size=20),
+                      axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
+                      axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)),
+                      legend.key.size = unit(2, 'lines'))
+
+jpeg(save_picture_name('compare_algos'), units="in", width=12, height=8, res=300)
+
+ggplot(all_data_to_plot,aes(x = Gamma, y = value, colour =variable )) +
+  geom_smooth(aes(colour = variable),se = F)+
+  ylab('Estimated KL Divergence')+
+  xlab(gamma_title)+ export_theme2+
+  ggtitle('Estimated KL Divergence for Various Optimization Algorithms')+
+  scale_colour_discrete(name = 'Algorithm',
+                      breaks = c('Best','Worst','SGD','Adam','Momentum'),
+                      labels = c(best_title,worst_title,'SGD','Adam','Momentum')) 
+
+dev.off()
+
 ggplot(all_data_to_plot,aes(x = Gamma, y = value, colour =variable )) +
   geom_smooth(aes(colour = variable),se = F)+
   ylab('Estimated KL Divergence')+
   xlab(gamma_title)+
   ggtitle('Estimated KL Divergence for Various Optimization Algorithms')+
   scale_colour_discrete(name = 'Algorithm',
-                      breaks = c('Best','Worst','SGD','Adam','Momentum'),
-                      labels = c(best_title,worst_title,'SGD','Adam','Momentum')) 
+                        breaks = c('Best','Worst','SGD','Adam','Momentum'),
+                        labels = c(best_title,worst_title,'SGD','Adam','Momentum')) 
+
 
