@@ -60,14 +60,13 @@ g_parameters = [weight_g_1,bias_g_1, weight_g_2, bias_g_2]
 
 
 
-
 # losses
 real_dist_placeholder = tf.placeholder(tf.float32, shape=(None, 1))
 generator_input_placeholder = tf.placeholder(tf.float32, shape=(None, 1))
 with tf.variable_scope("Discriminator") as scope:
-	d_output_real = discriminator(real_dist_placeholder, d_parameters)
-	scope.reuse_variables()
-	d_output_fake = discriminator(generator(generator_input_placeholder, g_parameters), d_parameters)
+    d_output_real = discriminator(real_dist_placeholder, d_parameters)
+    scope.reuse_variables()
+    d_output_fake = discriminator(generator(generator_input_placeholder, g_parameters), d_parameters)
 loss_d = tf.reduce_mean(-tf.log(d_output_real) - tf.log(1 - d_output_fake))
 loss_g = tf.reduce_mean(tf.log(1-d_output_fake))
 
@@ -89,7 +88,6 @@ for it in range(1,number_of_trails+1):
 
 	train_g = train_dict_g[optimizer]
 	train_d = train_dict_d[optimizer]
-
 
 
 

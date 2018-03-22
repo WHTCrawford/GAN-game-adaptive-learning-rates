@@ -519,6 +519,7 @@ control_standardized_sets[[1]] = standardized_data[collected_data$Phi == 0,]
 kl_controls[[1]] = KL_dataframe[KL_dataframe$Phi == 0,]
 
 
+
 for(i in 2:3){
   
   data_path = paste0(c('/Users/Billy/PycharmProjects/GALR/data_control2/',controls[i-1]), collapse='')
@@ -565,14 +566,13 @@ for(i in 2:3){
     
     kl_controls[[i]]  = KL_dataframe1
     
-    write.csv(x = KL_dataframe, 'KL_divergence.csv',row.names = F)
+    write.csv(x = KL_dataframe1, 'KL_divergence.csv',row.names = F)
   } else{
-    KL_dataframe1 = read.csv('KL_divergence.csv', header=T)
+    KL_dataframe1 = read.csv(paste0(c(data_path,'/KL_divergence.csv'), collapse = ''), header=T)
     kl_controls[[i]] = KL_dataframe1
   }
   
 }
-
 
 
 # find high and low points of smoothed surface ----
@@ -625,19 +625,17 @@ for(i in 1:3){
 
 
 
-
-
-
-
-
-best_title = bquote(phi %~~% .(round(best_phi,1)))
-
-
+best_title = bquote('Score Adaptive,'~phi %~~% .(round(best_phi,2)))
+worst_title = bquote('Score Adaptive, '~phi %~~% .(round(worst_phi,2)))
+gamma_title = bquote(gamma)
 
 
 ggplot(all_data_to_plot,aes(x = Gamma, y = value, colour =variable )) +
   geom_smooth(aes(colour = variable),se = F)+
-  scale_colour_discrete(name = 'Line',
+  ylab('Estimated KL Divergence')+
+  xlab(gamma_title)+
+  ggtitle('Estimated KL Divergence for Various Optimization Algorithms')+
+  scale_colour_discrete(name = 'Algorithm',
                       breaks = c('Best','Worst','SGD','Adam','Momentum'),
-                      labels = c(best_title,'Worst','SGD','Adam','Momentum')) 
+                      labels = c(best_title,worst_title,'SGD','Adam','Momentum')) 
 
