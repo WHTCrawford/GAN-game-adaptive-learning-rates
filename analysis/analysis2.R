@@ -10,7 +10,9 @@ library(lattice)
 library(FNN)
 library(pbapply)
 library('grDevices')
+library(dplyr)
 source('/Users/Billy/PycharmProjects/GALR/mulitplot.R')
+
 
 
 # Which plots to show ################################################## 
@@ -22,7 +24,7 @@ plot_med_histogram_KL = T
 qqplot_median = T
 qqplot_randoms = T
 
-recalc_KL = F
+recalc_KL = T
 
 # Sub folder ################################################## 
 main_folder = 'data_uneven2'
@@ -82,6 +84,63 @@ gamma_boundaries= c(min(collected_data$Gamma)+
 phi_boundaries = c(min(collected_data$Phi),
                    min(collected_data$Phi)+
                      (max(collected_data$Phi)-min(collected_data$Phi))/2)
+
+
+
+
+
+
+# Samples plot  ################################################## 
+
+if(phi_against_gamma){
+  cols = gg_color_hue(2)
+  p1 = ggplot(collected_data,aes(x = Gamma, y = Phi))+geom_point(col=cols[1])+
+    geom_hline(yintercept = phi_boundaries[1]+0.001, col=cols[2], lty = 2, lwd = 3) +
+    geom_hline(yintercept = phi_boundaries[2], col=cols[2], lty = 2, lwd = 3)+
+    geom_vline(xintercept = gamma_boundaries[1], col=cols[2], lty = 2, lwd = 3) +
+    geom_vline(xintercept = gamma_boundaries[2], col=cols[2], lty = 2, lwd = 3)+
+    xlab(bquote(gamma))+ylab(bquote(phi))+export_theme1
+  print(p1)
+  jpeg(save_picture_name('samples'), units="in", width=16, height=12, res=300)
+  print(p1)
+  dev.off()
+}
+
+# How many NaNs ----
+
+means = rowMeans(collected_data[,3:ncol(collected_data)])
+mean(means > 0 | means < 0) 
+
+
+# Calc KL Divergence and save to file -------
+
+if(recalc_KL){
+  
+  real_dist = rnorm(10000 , 6,1)
+  
+  kl_to_real = function(vec){
+    vec_1 = as.numeric(vec)
+    return(KL.divergence(real_dist,vec_1,k=10)[10])
+  }
+  
+  kl_from_real = function(vec){
+    vec_1 = as.numeric(vec)
+    return(KL.divergence(vec_1,real_dist,k=10)[10])
+  }
+  
+  KL_vec = pbapply(collected_data[,3:ncol(collected_data)],MARGIN = 1,kl_to_real)
+  
+  KL_vec2 = pbapply(collected_data[,3:ncol(collected_data)],MARGIN = 1,kl_from_real)
+  
+  KL_dataframe <<- data.frame(Gamma = collected_data[,1],
+                              Phi = collected_data[,2],
+                              KL_real_gen = KL_vec,
+                              KL_gen_real = KL_vec2)
+  
+  write.csv(x = KL_dataframe, 'KL_divergence.csv',row.names = F)
+} else{
+  KL_dataframe <<- read.csv('KL_divergence.csv', header=T)
+}
 
 
 # Bring in control data ------
@@ -153,58 +212,11 @@ for(i in 2:3){
 }
 
 
-
-# Samples plot  ################################################## 
-
-if(phi_against_gamma){
-  cols = gg_color_hue(2)
-  p1 = ggplot(collected_data,aes(x = Gamma, y = Phi))+geom_point(col=cols[1])+
-    geom_hline(yintercept = phi_boundaries[1]+0.001, col=cols[2], lty = 2, lwd = 3) +
-    geom_hline(yintercept = phi_boundaries[2], col=cols[2], lty = 2, lwd = 3)+
-    geom_vline(xintercept = gamma_boundaries[1], col=cols[2], lty = 2, lwd = 3) +
-    geom_vline(xintercept = gamma_boundaries[2], col=cols[2], lty = 2, lwd = 3)+
-    xlab(bquote(gamma))+ylab(bquote(phi))+export_theme1
-  print(p1)
-  jpeg(save_picture_name('samples'), units="in", width=16, height=12, res=300)
-  print(p1)
-  dev.off()
+for(i in 2:3){
+  plot(1:nrow(kl_controls[[i]]),kl_controls[[i]][,3])
+  
 }
 
-# How many NaNs ----
-
-means = rowMeans(collected_data[,3:ncol(collected_data)])
-mean(means > 0 | means < 0) 
-
-
-# Calc KL Divergence and save to file -------
-
-if(recalc_KL){
-  
-  real_dist = rnorm(10000 , 6,1)
-  
-  kl_to_real = function(vec){
-    vec_1 = as.numeric(vec)
-    return(KL.divergence(real_dist,vec_1,k=10)[10])
-  }
-  
-  kl_from_real = function(vec){
-    vec_1 = as.numeric(vec)
-    return(KL.divergence(vec_1,real_dist,k=10)[10])
-  }
-  
-  KL_vec = pbapply(collected_data[,3:ncol(collected_data)],MARGIN = 1,kl_to_real)
-  
-  KL_vec2 = pbapply(collected_data[,3:ncol(collected_data)],MARGIN = 1,kl_from_real)
-  
-  KL_dataframe <<- data.frame(Gamma = collected_data[,1],
-                              Phi = collected_data[,2],
-                              KL_real_gen = KL_vec,
-                              KL_gen_real = KL_vec2)
-  
-  write.csv(x = KL_dataframe, 'KL_divergence.csv',row.names = F)
-} else{
-  KL_dataframe <<- read.csv('KL_divergence.csv', header=T)
-}
 
 
 # LOESS KL plot ------
@@ -253,7 +265,7 @@ if(loess_plot_KL){
                 ylab = expression(phi), zlab = list('-Estimated KL Divergence',rot = 90), col = 'black',
                 shade = F,pretty=T,scales = list(x =list(arrows=F),
                                                  y=list(arrows=F), 
-                                                 z = list(arrows = T)),
+                                                 z = list(arrows = F)),
                 screen = list(z = -50, x = -60))
   print(p1)
   jpeg(save_picture_name('loess'), units="in", width=7, height=7, res=300)
@@ -278,7 +290,7 @@ if(loess_plot_KL){
                 ylab = expression(phi), zlab = list('-Estimated KL Divergence',rot = 90), col = 'black',
                 shade = F,pretty=T,scales = list(x =list(arrows=F),
                                                  y=list(arrows=F), 
-                                                 z = list(arrows=T)),
+                                                 z = list(arrows=F)),
                 screen = list(z = -50, x = -60))
   print(p1)
   jpeg(save_picture_name('loess_gen_to_real'), units="in", width=7, height=7, res=300)
@@ -638,7 +650,7 @@ export_theme2 = theme(text=element_text(size=20),
                       axis.title.x = element_text(margin = margin(t = 20, r = 0, b = 0, l = 0)),
                       legend.key.size = unit(2, 'lines'))
 
-jpeg(save_picture_name('compare_algos'), units="in", width=12, height=8, res=300)
+jpeg(save_picture_name('compare_algos'), units="in", width=13, height=8, res=300)
 
 ggplot(all_data_to_plot,aes(x = Gamma, y = value, colour =variable )) +
   geom_smooth(aes(colour = variable),se = F)+
@@ -652,7 +664,7 @@ ggplot(all_data_to_plot,aes(x = Gamma, y = value, colour =variable )) +
 dev.off()
 
 ggplot(all_data_to_plot,aes(x = Gamma, y = value, colour =variable )) +
-  geom_smooth(aes(colour = variable),se = F)+
+  geom_smooth(aes(colour = variable),method = 'loess',se = F)+
   ylab('Estimated KL Divergence')+
   xlab(gamma_title)+
   ggtitle('Estimated KL Divergence for Various Optimization Algorithms')+
