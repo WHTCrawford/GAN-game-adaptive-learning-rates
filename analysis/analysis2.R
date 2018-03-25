@@ -178,6 +178,13 @@ for(i in 2:3){
   control_data_sets[[i]] = collected_data1
   control_standardized_sets[[i]] = standardized_data1
   
+  
+  # remove rows that didnt work
+  View(control_data_sets[[2]])
+  rowMeans(control_data_sets[[1]][,2:ncol(control_data_sets[[1]])])[3]
+  
+  
+  
   if(recalc_KL){
     
     real_dist = rnorm(10000 , 6,1)
@@ -589,6 +596,7 @@ if(qqplot_randoms){
 
 
 # find high and low points of smoothed surface ----
+ 
 
 
 size_of_grid = 80
